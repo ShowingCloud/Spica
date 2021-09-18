@@ -1,5 +1,5 @@
-QT += quick
-CONFIG += c++11
+QT += quick sql serialport widgets
+CONFIG += c++1z console
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -17,6 +17,8 @@ SOURCES += \
 
 RESOURCES += qml.qrc
 
+TRANSLATIONS += zh_CN.ts
+
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 
@@ -27,3 +29,6 @@ QML_DESIGNER_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    zh_CN.ts
