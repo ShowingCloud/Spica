@@ -34,39 +34,39 @@ void devPLC::readData()
     QModbusReply *reply = this->dev->sendReadRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startRead, this->lenRead),
                 this->serverAddr);
-    if (!reply->isFinished())
-        connect(reply, &QModbusReply::finished, this, &devPLC::gotData);
-    else
-        delete reply;
-}
-
-void devPLC::gotData()
-{
-    QModbusReply *reply = qobject_cast<QModbusReply *>(sender());
-    if (!reply)
-        return;
-
-    if (reply->error() == QModbusDevice::NoError) {
-        const QModbusDataUnit unit = reply->result();
-        qDebug() << "Got data: " << unit.values();
-
-        if (unit.startAddress() == this->startRead)
-            this->readValue = unit.values();
-        else if (unit.startAddress() - this->startRead == this->readValue.length())
-            this->readValue.append(unit.values());
-        else {
-            qDebug() << "Replacing";
-            for (int i = 0, total = int(unit.valueCount()); i < total; ++i) {
-                this->readValue.replace(this->startRead + i, unit.value(i));
-            }
-        }
-    } else if (reply->error() == QModbusDevice::ProtocolError) {
-        qDebug() << "Read response error: " << reply->errorString() << reply->rawResult().exceptionCode();
+    if (!reply) {
+        qDebug() << "Read error: " << this->dev->errorString();
     } else {
-        qDebug() << "Read response error: " << reply->errorString() << reply->error();
-    }
+        if (!reply->isFinished())
+            connect(reply, &QModbusReply::finished, this, [=]() {
+                if (!reply)
+                    return;
 
-    reply->deleteLater();
+                if (reply->error() == QModbusDevice::NoError) {
+                    const QModbusDataUnit unit = reply->result();
+                    qDebug() << "Got data: " << unit.values();
+
+                    if (unit.startAddress() == this->startRead)
+                        this->readValue = unit.values();
+                    else if (unit.startAddress() - this->startRead == this->readValue.length())
+                        this->readValue.append(unit.values());
+                    else {
+                        qDebug() << "Replacing";
+                        for (int i = 0, total = int(unit.valueCount()); i < total; ++i) {
+                            this->readValue.replace(this->startRead + i, unit.value(i));
+                        }
+                    }
+                } else if (reply->error() == QModbusDevice::ProtocolError) {
+                    qDebug() << "Read response error: " << reply->errorString() << reply->rawResult().exceptionCode();
+                } else {
+                    qDebug() << "Read response error: " << reply->errorString() << reply->error();
+                }
+
+                reply->deleteLater();
+            });
+        else
+            delete reply;
+    }
 }
 
 void devPLC::readState()
@@ -74,25 +74,50 @@ void devPLC::readState()
     QModbusReply *reply = this->dev->sendReadRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->addrState, 1),
                 this->serverAddr);
-    if (!reply->isFinished())
-        connect(reply, &QModbusReply::finished, this, &devPLC::gotState);
-    else
-        delete reply;
+    if (!reply) {
+        qDebug() << "Read state error: " << this->dev->errorString();
+    } else {
+        if (!reply->isFinished())
+            connect(reply, &QModbusReply::finished, this, [=]() {
+                if (!reply)
+                    return;
+
+                if (reply->error() == QModbusDevice::NoError) {
+                    const QModbusDataUnit unit = reply->result();
+                    const int state = unit.value(0);
+                    qDebug() << "Got state: " << state;
+                } else if (reply->error() == QModbusDevice::ProtocolError) {
+                    qDebug() << "Got wrong state: " << reply->errorString() << reply->rawResult().exceptionCode();
+                } else {
+                    qDebug() << "Got wrong state: " << reply->errorString() << reply->error();
+                }
+
+                reply->deleteLater();
+            });
+        else
+            delete reply;
+    }
 }
 
-void devPLC::gotState()
+void devPLC::writeData()
 {
-    QModbusReply *reply = qobject_cast<QModbusReply *>(sender());
-    if (!reply)
-        return;
-
-    if (reply->error() == QModbusDevice::NoError) {
-        const QModbusDataUnit unit = reply->result();
-        const int state = unit.value(0);
-        qDebug() << "Got state: " << state;
-    } else {
-        qDebug() << "Got wrong state: " << reply->errorString() << reply->error();
-    }
-
-    reply->deleteLater();
+     QModbusReply *reply = this->dev->sendWriteRequest(
+                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startWrite, this->writeValue),
+                 this->serverAddr);
+     if (!reply) {
+         qDebug() << "Write error: " << this->dev->errorString();
+     } else {
+         if (!reply->isFinished()) {
+             connect(reply, &QModbusReply::finished, this, [=]() {
+                 if (reply->error() == QModbusDevice::ProtocolError) {
+                     qDebug() << "Write response error: " << reply->errorString() << reply->rawResult().exceptionCode();
+                 } else if (reply->error() != QModbusDevice::NoError) {
+                     qDebug() << "Write response error: " << reply->errorString() << reply->error();
+                 }
+                 reply->deleteLater();
+             });
+         } else {
+             reply->deleteLater();
+         }
+     }
 }

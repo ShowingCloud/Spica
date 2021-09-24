@@ -13,13 +13,12 @@ public:
     explicit devPLC(QObject *parent = nullptr);
     ~devPLC() override;
 
-    void readData();
-    void readState();
-
 public slots:
     void onModbusStateChanged(int state);
-    void gotData();
-    void gotState();
+    void readData();
+    void readState();
+    void writeData();
+
 
 private:
     const QString addr = "192.168.2.1";
