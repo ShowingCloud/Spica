@@ -33,14 +33,14 @@ void devPLC::readData()
 {
     QModbusReply *reply = this->dev->sendReadRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startRead, this->lenRead),
-                0/*serverAddr*/);
+                this->serverAddr);
     if (!reply->isFinished())
-        connect(reply, &QModbusReply::finished, this, &devPLC::onReadReady);
+        connect(reply, &QModbusReply::finished, this, &devPLC::gotData);
     else
         delete reply;
 }
 
-void devPLC::onReadReady()
+void devPLC::gotData()
 {
     QModbusReply *reply = qobject_cast<QModbusReply *>(sender());
     if (!reply)
@@ -48,6 +48,7 @@ void devPLC::onReadReady()
 
     if (reply->error() == QModbusDevice::NoError) {
         const QModbusDataUnit unit = reply->result();
+        qDebug() << "Got data: " << unit.values();
 
         if (unit.startAddress() == this->startRead)
             this->readValue = unit.values();
@@ -63,6 +64,34 @@ void devPLC::onReadReady()
         qDebug() << "Read response error: " << reply->errorString() << reply->rawResult().exceptionCode();
     } else {
         qDebug() << "Read response error: " << reply->errorString() << reply->error();
+    }
+
+    reply->deleteLater();
+}
+
+void devPLC::readState()
+{
+    QModbusReply *reply = this->dev->sendReadRequest(
+                QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->addrState, 1),
+                this->serverAddr);
+    if (!reply->isFinished())
+        connect(reply, &QModbusReply::finished, this, &devPLC::gotState);
+    else
+        delete reply;
+}
+
+void devPLC::gotState()
+{
+    QModbusReply *reply = qobject_cast<QModbusReply *>(sender());
+    if (!reply)
+        return;
+
+    if (reply->error() == QModbusDevice::NoError) {
+        const QModbusDataUnit unit = reply->result();
+        const int state = unit.value(0);
+        qDebug() << "Got state: " << state;
+    } else {
+        qDebug() << "Got wrong state: " << reply->errorString() << reply->error();
     }
 
     reply->deleteLater();

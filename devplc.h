@@ -14,16 +14,19 @@ public:
     ~devPLC() override;
 
     void readData();
+    void readState();
 
 public slots:
     void onModbusStateChanged(int state);
-    void onReadReady();
+    void gotData();
+    void gotState();
 
 private:
     const QString addr = "192.168.2.1";
     const int port = 502;
     const int timeout = 1000;
     const int retries = 3;
+    const int serverAddr = 0;
     const int startRead = 1000;
     const quint16 lenRead = 140;
     const int startWrite = 1140;
