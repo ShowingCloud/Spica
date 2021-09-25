@@ -12,10 +12,17 @@ devPLC::devPLC(QObject *parent)
     qDebug() << "Connecting: " << this->dev->connectDevice();
 
     connect(this->dev, &QModbusTcpClient::errorOccurred, [this](QModbusDevice::Error) {
-        qDebug() << "Error: " << this->dev->errorString();
+        qDebug() << "Dev error: " << this->dev->errorString();
     });
     connect(this->dev, &QModbusClient::stateChanged,
             this, &devPLC::onModbusStateChanged);
+
+    QTimer *timer = new QTimer(this);
+    QObject::connect(timer, &QTimer::timeout, [=]() {
+        this->readState();
+        timer->start(1000);
+    });
+    timer->start(0);
 }
 
 devPLC::~devPLC()
@@ -83,9 +90,14 @@ void devPLC::readState()
                     return;
 
                 if (reply->error() == QModbusDevice::NoError) {
-                    const QModbusDataUnit unit = reply->result();
-                    const int state = unit.value(0);
+                    const int state = reply->result().value(0);
                     qDebug() << "Got state: " << state;
+
+                    if (state == 1) {
+                        this->readData();
+                        this->writeData();
+                        this->writeState();
+                    }
                 } else if (reply->error() == QModbusDevice::ProtocolError) {
                     qDebug() << "Got wrong state: " << reply->errorString() << reply->rawResult().exceptionCode();
                 } else {
@@ -114,6 +126,33 @@ void devPLC::writeData()
                  } else if (reply->error() != QModbusDevice::NoError) {
                      qDebug() << "Write response error: " << reply->errorString() << reply->error();
                  }
+                 qDebug() << "Wrote: " << reply->result().values();
+
+                 reply->deleteLater();
+             });
+         } else {
+             reply->deleteLater();
+         }
+     }
+}
+
+void devPLC::writeState()
+{
+     QModbusReply *reply = this->dev->sendWriteRequest(
+                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->addrState, 1),
+                 this->serverAddr);
+     if (!reply) {
+         qDebug() << "Write error: " << this->dev->errorString();
+     } else {
+         if (!reply->isFinished()) {
+             connect(reply, &QModbusReply::finished, this, [=]() {
+                 if (reply->error() == QModbusDevice::ProtocolError) {
+                     qDebug() << "Write state error: " << reply->errorString() << reply->rawResult().exceptionCode();
+                 } else if (reply->error() != QModbusDevice::NoError) {
+                     qDebug() << "Write state error: " << reply->errorString() << reply->error();
+                 }
+                 qDebug() << "Wrote: " << reply->result().values();
+
                  reply->deleteLater();
              });
          } else {

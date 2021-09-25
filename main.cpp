@@ -1,11 +1,20 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QTranslator>
+
+#include "devplc.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);
+
+    QTranslator translator;
+    translator.load(":/i18n/zh_CN");
+    app.installTranslator(&translator);
+
+    qmlRegisterType<devPLC>("spica.devplc", 1, 0, "DevPLC");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

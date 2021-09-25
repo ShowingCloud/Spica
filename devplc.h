@@ -2,6 +2,7 @@
 #define DEVPLC_H
 
 #include <QObject>
+#include <QTimer>
 #include <QModbusTcpClient>
 #include <QDebug>
 
@@ -18,6 +19,7 @@ public slots:
     void readData();
     void readState();
     void writeData();
+    void writeState();
 
 
 private:
@@ -25,17 +27,17 @@ private:
     const int port = 502;
     const int timeout = 1000;
     const int retries = 3;
-    const int serverAddr = 0;
+    const int serverAddr = 255;
     const int startRead = 1000;
     const quint16 lenRead = 140;
     const int startWrite = 1140;
     const quint16 lenWrite = 18;
     const int addrState = 1200;
 
-    QModbusReply *lastRequest = nullptr;
     QModbusTcpClient *dev = nullptr;
+    QTimer *timer = nullptr;
     QVector<quint16> readValue;
-    QVector<quint16> writeValue;
+    QVector<quint16> writeValue = QVector<quint16>(lenWrite, 1);
     QVector<quint16> stateValue;
 };
 
