@@ -20,6 +20,7 @@ devPLC::devPLC(QObject *parent)
     QTimer *timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, [=]() {
         this->readState();
+        this->readData();
         timer->start(1000);
     });
     timer->start(0);
