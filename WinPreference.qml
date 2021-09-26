@@ -8,9 +8,6 @@ Item {
     id: winPreference
     anchors.fill: parent
 
-    DevPLCServer {
-    }
-
     DevPLC {
     }
 
