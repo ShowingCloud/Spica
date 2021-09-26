@@ -29,7 +29,7 @@ private:
     const int port = 10502;
 #else
     const QString addr = "192.168.2.1";
-    const int port = 502;
+    const int port = 102;
 #endif
     const int timeout = 1000;
     const int retries = 3;
