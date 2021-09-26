@@ -33,12 +33,12 @@ private:
 #endif
     const int timeout = 1000;
     const int retries = 3;
-    const int serverAddr = 0;
-    const int startRead = 1000;
+    const int serverAddr = 255;
+    const int startRead = 41000;
     const quint16 lenRead = 123;
-    const int startWrite = 1140;
+    const int startWrite = 41140;
     const quint16 lenWrite = 18;
-    const int addrState = 1200;
+    const int addrState = 41200;
 
     QModbusTcpClient *dev = nullptr;
     QTimer *timer = nullptr;
@@ -66,7 +66,7 @@ private:
     QModbusTcpServer *dev = nullptr;
     const QString addr = "127.0.0.1";
     const int port = 10502;
-    const int serverAddr = 0;
+    const int serverAddr = 255;
 };
 
 #else

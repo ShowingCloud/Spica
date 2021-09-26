@@ -26,9 +26,9 @@ devPLC::devPLC(QObject *parent) : QObject(parent)
 #endif
         this->readState();
         this->readData();
-        timer->start(100);
+        timer->start(1000);
     });
-    //timer->start(0);
+    timer->start(0);
 }
 
 devPLC::~devPLC()
