@@ -27,10 +27,8 @@ private:
 #ifdef QT_DEBUG
     const QString addr = "127.0.0.1";
     const int port = 10502;
-    //const QString addr = "192.168.107.188";
-    //const int port = 502;
 #else
-    const QString addr = "192.168.2.1";
+    const QString addr = "192.168.2.3";
     const int port = 502;
 #endif
     const int timeout = 1000;
