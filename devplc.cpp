@@ -22,16 +22,13 @@ devPLC::devPLC(QObject *parent) : QObject(parent)
     QObject::connect(timer, &QTimer::timeout, [=]() {
 #ifndef QT_NO_DEBUG
         this->writeReadData();
+        this->writeState();
 #endif
         this->readState();
         this->readData();
-        timer->start(100);
+        timer->start(1000);
     });
     timer->start(0);
-
-#ifndef QT_NO_DEBUG
-    qDebug() << "initializer " << this->readValueAllOne;
-#endif
 }
 
 devPLC::~devPLC()
@@ -41,6 +38,11 @@ devPLC::~devPLC()
 
 void devPLC::readData()
 {
+    if (this->dev->state() != QModbusDevice::ConnectedState) {
+        qDebug() << "Not connected";
+        return;
+    }
+
     QModbusReply *reply = this->dev->sendReadRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startRead, this->lenRead),
                 this->serverAddr);
@@ -81,6 +83,11 @@ void devPLC::readData()
 
 void devPLC::readState()
 {
+    if (this->dev->state() != QModbusDevice::ConnectedState) {
+        qDebug() << "Not connected";
+        return;
+    }
+
     QModbusReply *reply = this->dev->sendReadRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->addrState, 1),
                 this->serverAddr);
@@ -116,6 +123,11 @@ void devPLC::readState()
 
 void devPLC::writeData()
 {
+    if (this->dev->state() != QModbusDevice::ConnectedState) {
+        qDebug() << "Not connected";
+        return;
+    }
+
     QModbusReply *reply = this->dev->sendWriteRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startWrite, this->writeValue),
                 this->serverAddr);
@@ -142,10 +154,11 @@ void devPLC::writeData()
 #ifndef QT_NO_DEBUG
 void devPLC::writeReadData()
 {
-    qDebug() << "writeReadData " << this->readValueAllOne;
-    QModbusDataUnit dataunit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startRead, this->lenRead);
-    dataunit.setValues(this->readValueAllOne);
-    QModbusReply *reply = this->dev->sendWriteRequest(dataunit,
+    if (this->dev->state() != QModbusDevice::ConnectedState)
+        return;
+
+    QModbusReply *reply = this->dev->sendWriteRequest(
+                QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startRead, this->readValueAllOne),
                 this->serverAddr);
     qDebug() << "write ended" << reply;
     reply->deleteLater();
@@ -154,8 +167,13 @@ void devPLC::writeReadData()
 
 void devPLC::writeState()
 {
+    if (this->dev->state() != QModbusDevice::ConnectedState) {
+        qDebug() << "Not connected";
+        return;
+    }
+
     QModbusReply *reply = this->dev->sendWriteRequest(
-                QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->addrState, QVector<quint16>(1, 1)),
+                QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->addrState, QVector<quint16>(1, 2)),
                 this->serverAddr);
     if (!reply) {
         qDebug() << "Write error: " << this->dev->errorString();

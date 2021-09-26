@@ -11,6 +11,9 @@ Item {
     DevPLC {
     }
 
+    DevPLCServer {
+    }
+
     TableView {
         anchors.fill: parent
         columnSpacing: 1

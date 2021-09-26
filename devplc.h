@@ -35,7 +35,7 @@ private:
     const int retries = 3;
     const int serverAddr = 255;
     const int startRead = 1000;
-    const quint16 lenRead = 128;
+    const quint16 lenRead = 123;
     const int startWrite = 1140;
     const quint16 lenWrite = 18;
     const int addrState = 1200;
