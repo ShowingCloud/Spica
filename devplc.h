@@ -33,7 +33,7 @@ private:
 #endif
     const int timeout = 1000;
     const int retries = 3;
-    const int serverAddr = 255;
+    const int serverAddr = 0;
     const int startRead = 1000;
     const quint16 lenRead = 123;
     const int startWrite = 1140;
