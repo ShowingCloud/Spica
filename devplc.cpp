@@ -20,7 +20,7 @@ devPLC::devPLC(QObject *parent) : QObject(parent)
 
     QTimer *timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, [=]() {
-#ifndef QT_NO_DEBUG
+#ifdef QT_DEBUG
         this->writeReadData();
         this->writeState();
 #endif
@@ -151,7 +151,7 @@ void devPLC::writeData()
     }
 }
 
-#ifndef QT_NO_DEBUG
+#ifdef QT_DEBUG
 void devPLC::writeReadData()
 {
     if (this->dev->state() != QModbusDevice::ConnectedState)
@@ -194,7 +194,7 @@ void devPLC::writeState()
     }
 }
 
-#ifndef QT_NO_DEBUG
+#ifdef QT_DEBUG
 
 devPLCServer::devPLCServer(QObject *parent) : QObject(parent)
 {

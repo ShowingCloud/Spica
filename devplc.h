@@ -19,17 +19,17 @@ public slots:
     void readState();
     void writeData();
     void writeState();
-#ifndef QT_NO_DEBUG
+#ifdef QT_DEBUG
     void writeReadData();
 #endif
 
 private:
-#ifdef QT_NO_DEBUG
-    const QString addr = "192.168.2.1";
-    const int port = 502;
-#else
+#ifdef QT_DEBUG
     const QString addr = "127.0.0.1";
     const int port = 10502;
+#else
+    const QString addr = "192.168.2.1";
+    const int port = 502;
 #endif
     const int timeout = 1000;
     const int retries = 3;
@@ -45,21 +45,13 @@ private:
     QVector<quint16> readValue;
     QVector<quint16> writeValue = QVector<quint16>(lenWrite, 1);
     QVector<quint16> stateValue;
-#ifndef QT_NO_DEBUG
+#ifdef QT_DEBUG
     const QVector<quint16> readValueAllOne = QVector<quint16>(lenRead, 1);
 #endif
 };
 
 
-#ifdef QT_NO_DEBUG
-class devPLCServer : public QObject
-{
-    Q_OBJECT
-
-public:
-    explicit devPLCServer(QObject *parent = nullptr) : QObject(parent) {};
-};
-#else
+#ifdef QT_DEBUG
 #include <QModbusTcpServer>
 
 class devPLCServer : public QObject
@@ -75,6 +67,15 @@ private:
     const QString addr = "127.0.0.1";
     const int port = 10502;
     const int serverAddr = 255;
+};
+
+#else
+class devPLCServer : public QObject
+{
+    Q_OBJECT
+
+public:
+    explicit devPLCServer(QObject *parent = nullptr) : QObject(parent) {};
 };
 #endif
 
