@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
     app.installTranslator(&translator);
 
     qmlRegisterType<devPLC>("spica.devplc", 1, 0, "DevPLC");
+    qmlRegisterType<devPLCServer>("spica.devplc", 1, 0, "DevPLCServer");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

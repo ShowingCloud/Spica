@@ -1,6 +1,6 @@
 #include "devplc.h"
 
-devPLC::devPLC(QObject *parent)
+devPLC::devPLC(QObject *parent) : QObject(parent)
 {
     Q_UNUSED(parent)
 
@@ -12,29 +12,29 @@ devPLC::devPLC(QObject *parent)
     qDebug() << "Connecting: " << this->dev->connectDevice();
 
     connect(this->dev, &QModbusTcpClient::errorOccurred, [this](QModbusDevice::Error) {
-        qDebug() << "Dev error: " << this->dev->errorString();
+        qDebug() << "Client dev error: " << this->dev->errorString();
     });
-    connect(this->dev, &QModbusClient::stateChanged,
-            this, &devPLC::onModbusStateChanged);
+    connect(this->dev, &QModbusTcpClient::stateChanged, [](int state) {
+        qDebug() << "Client state changed: " << state;
+    });
 
     QTimer *timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, [=]() {
+#ifndef QT_NO_DEBUG
+        this->writeReadData();
+#endif
         this->readState();
         this->readData();
         timer->start(1000);
     });
     timer->start(0);
+
+    qDebug() << "initializer " << this->readValueAllOne;
 }
 
 devPLC::~devPLC()
 {
     this->dev->disconnectDevice();
-}
-
-void devPLC::onModbusStateChanged(int state)
-{
-    qDebug() << "State changed: " << state;
-
 }
 
 void devPLC::readData()
@@ -46,7 +46,7 @@ void devPLC::readData()
         qDebug() << "Read error: " << this->dev->errorString();
     } else {
         if (!reply->isFinished())
-            connect(reply, &QModbusReply::finished, this, [=]() {
+            connect(reply, &QModbusReply::finished, [=]() {
                 if (!reply)
                     return;
 
@@ -86,7 +86,7 @@ void devPLC::readState()
         qDebug() << "Read state error: " << this->dev->errorString();
     } else {
         if (!reply->isFinished())
-            connect(reply, &QModbusReply::finished, this, [=]() {
+            connect(reply, &QModbusReply::finished, [=]() {
                 if (!reply)
                     return;
 
@@ -114,50 +114,98 @@ void devPLC::readState()
 
 void devPLC::writeData()
 {
-     QModbusReply *reply = this->dev->sendWriteRequest(
-                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startWrite, this->writeValue),
-                 this->serverAddr);
-     if (!reply) {
-         qDebug() << "Write error: " << this->dev->errorString();
-     } else {
-         if (!reply->isFinished()) {
-             connect(reply, &QModbusReply::finished, this, [=]() {
-                 if (reply->error() == QModbusDevice::ProtocolError) {
-                     qDebug() << "Write response error: " << reply->errorString() << reply->rawResult().exceptionCode();
-                 } else if (reply->error() != QModbusDevice::NoError) {
-                     qDebug() << "Write response error: " << reply->errorString() << reply->error();
-                 }
-                 qDebug() << "Wrote: " << reply->result().values();
+    QModbusReply *reply = this->dev->sendWriteRequest(
+                QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startWrite, this->writeValue),
+                this->serverAddr);
+    if (!reply) {
+        qDebug() << "Write error: " << this->dev->errorString();
+    } else {
+        if (!reply->isFinished()) {
+            connect(reply, &QModbusReply::finished, [=]() {
+                if (reply->error() == QModbusDevice::ProtocolError) {
+                    qDebug() << "Write response error: " << reply->errorString() << reply->rawResult().exceptionCode();
+                } else if (reply->error() != QModbusDevice::NoError) {
+                    qDebug() << "Write response error: " << reply->errorString() << reply->error();
+                }
+                qDebug() << "Wrote: " << reply->result().values();
 
-                 reply->deleteLater();
-             });
-         } else {
-             reply->deleteLater();
-         }
-     }
+                reply->deleteLater();
+            });
+        } else {
+            reply->deleteLater();
+        }
+    }
 }
+
+#ifndef QT_NO_DEBUG
+void devPLC::writeReadData()
+{
+    qDebug() << "writeReadData " << this->readValueAllOne;
+    QModbusDataUnit dataunit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startRead, this->lenRead);
+    dataunit.setValues(this->readValueAllOne);
+    QModbusReply *reply = this->dev->sendWriteRequest(dataunit,
+                this->serverAddr);
+    qDebug() << "write ended" << reply;
+    reply->deleteLater();
+}
+#endif
 
 void devPLC::writeState()
 {
-     QModbusReply *reply = this->dev->sendWriteRequest(
-                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->addrState, 1),
-                 this->serverAddr);
-     if (!reply) {
-         qDebug() << "Write error: " << this->dev->errorString();
-     } else {
-         if (!reply->isFinished()) {
-             connect(reply, &QModbusReply::finished, this, [=]() {
-                 if (reply->error() == QModbusDevice::ProtocolError) {
-                     qDebug() << "Write state error: " << reply->errorString() << reply->rawResult().exceptionCode();
-                 } else if (reply->error() != QModbusDevice::NoError) {
-                     qDebug() << "Write state error: " << reply->errorString() << reply->error();
-                 }
-                 qDebug() << "Wrote: " << reply->result().values();
+    QModbusReply *reply = this->dev->sendWriteRequest(
+                QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->addrState, QVector<quint16>(1, 1)),
+                this->serverAddr);
+    if (!reply) {
+        qDebug() << "Write error: " << this->dev->errorString();
+    } else {
+        if (!reply->isFinished()) {
+            connect(reply, &QModbusReply::finished, [=]() {
+                if (reply->error() == QModbusDevice::ProtocolError) {
+                    qDebug() << "Write state error: " << reply->errorString() << reply->rawResult().exceptionCode();
+                } else if (reply->error() != QModbusDevice::NoError) {
+                    qDebug() << "Write state error: " << reply->errorString() << reply->error();
+                }
+                qDebug() << "Wrote: " << reply->result().values();
 
-                 reply->deleteLater();
-             });
-         } else {
-             reply->deleteLater();
-         }
-     }
+                reply->deleteLater();
+            });
+        } else {
+            reply->deleteLater();
+        }
+    }
 }
+
+#ifndef QT_NO_DEBUG
+
+devPLCServer::devPLCServer(QObject *parent) : QObject(parent)
+{
+    this->dev = new QModbusTcpServer(this);
+
+    this->dev->setMap({
+                          { QModbusDataUnit::HoldingRegisters, { QModbusDataUnit::HoldingRegisters, 0, 1300 } }
+                      });
+
+    this->dev->setConnectionParameter(QModbusDevice::NetworkPortParameter, this->port);
+    this->dev->setConnectionParameter(QModbusDevice::NetworkAddressParameter, this->addr);
+    this->dev->setServerAddress(this->serverAddr);
+    qDebug() << "Listening: " << this->dev->connectDevice();
+
+    connect(this->dev, &QModbusTcpServer::dataWritten, [](QModbusDataUnit::RegisterType type, int addr, int size) {
+        Q_UNUSED(type)
+        Q_UNUSED(addr)
+        Q_UNUSED(size)
+    });
+    connect(this->dev, &QModbusTcpServer::stateChanged, [](int state) {
+        qDebug() << "Server state changed: " << state;
+    });
+    connect(this->dev, &QModbusTcpServer::errorOccurred, [this](QModbusDevice::Error) {
+        qDebug() << "Server dev error: " << this->dev->errorString();
+    });
+}
+
+devPLCServer::~devPLCServer()
+{
+    this->dev->disconnectDevice();
+}
+
+#endif
