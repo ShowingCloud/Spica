@@ -43,6 +43,8 @@ void devPLC::readData()
         return;
     }
 
+    qDebug() << "Entering read function";
+
     QModbusReply *reply = this->dev->sendReadRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startRead, this->lenRead),
                 this->serverAddr);
@@ -87,6 +89,8 @@ void devPLC::readState()
         qDebug() << "Not connected";
         return;
     }
+
+    qDebug() << "Entering read function";
 
     QModbusReply *reply = this->dev->sendReadRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->addrState, 1),
