@@ -2,13 +2,11 @@
 
 devPLC::devPLC(QObject *parent) : QObject(parent)
 {
-    Q_UNUSED(parent)
-
     this->dev = new QModbusTcpClient(this);
     this->dev->setConnectionParameter(QModbusDevice::NetworkPortParameter, this->port);
     this->dev->setConnectionParameter(QModbusDevice::NetworkAddressParameter, this->addr);
-    //this->dev->setTimeout(this->timeout);
-    //this->dev->setNumberOfRetries(this->retries);
+    this->dev->setTimeout(this->timeout);
+    this->dev->setNumberOfRetries(this->retries);
     qDebug() << "Connecting: " << this->dev->connectDevice();
 
     connect(this->dev, &QModbusTcpClient::errorOccurred, [this](QModbusDevice::Error) {
@@ -20,6 +18,9 @@ devPLC::devPLC(QObject *parent) : QObject(parent)
 
     QTimer *timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, [=]() {
+        if (this->dev->state() == QModbusDevice::ClosingState)
+            qDebug() << "Connecting: " << this->dev->connectDevice();
+
 #ifdef QT_DEBUG
         this->writeReadData();
         this->writeState();
@@ -42,8 +43,6 @@ void devPLC::readData()
         qDebug() << "Not connected";
         return;
     }
-
-    qDebug() << "Entering read function";
 
     QModbusReply *reply = this->dev->sendReadRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startRead, this->lenRead),
@@ -71,9 +70,9 @@ void devPLC::readData()
                         }
                     }
                 } else if (reply->error() == QModbusDevice::ProtocolError) {
-                    qDebug() << "Read response error: " << reply->errorString() << reply->rawResult().exceptionCode();
+                    qDebug() << "Read data protocol error: " << reply->errorString() << reply->rawResult().exceptionCode();
                 } else {
-                    qDebug() << "Read response error: " << reply->errorString() << reply->error();
+                    qDebug() << "Read data error: " << reply->errorString() << reply->error();
                 }
 
                 reply->deleteLater();
@@ -89,8 +88,6 @@ void devPLC::readState()
         qDebug() << "Not connected";
         return;
     }
-
-    qDebug() << "Entering read function";
 
     QModbusReply *reply = this->dev->sendReadRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->addrState, 1),
@@ -113,7 +110,7 @@ void devPLC::readState()
                         this->writeState();
                     }
                 } else if (reply->error() == QModbusDevice::ProtocolError) {
-                    qDebug() << "Got wrong state: " << reply->errorString() << reply->rawResult().exceptionCode();
+                    qDebug() << "Got wrong state protocol: " << reply->errorString() << reply->rawResult().exceptionCode();
                 } else {
                     qDebug() << "Got wrong state: " << reply->errorString() << reply->error();
                 }
@@ -141,11 +138,11 @@ void devPLC::writeData()
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, [=]() {
                 if (reply->error() == QModbusDevice::ProtocolError) {
-                    qDebug() << "Write response error: " << reply->errorString() << reply->rawResult().exceptionCode();
+                    qDebug() << "Write data error protocol: " << reply->errorString() << reply->rawResult().exceptionCode();
                 } else if (reply->error() != QModbusDevice::NoError) {
-                    qDebug() << "Write response error: " << reply->errorString() << reply->error();
+                    qDebug() << "Write data error: " << reply->errorString() << reply->error();
                 }
-                qDebug() << "Wrote: " << reply->result().values();
+                qDebug() << "Wrote data: " << reply->result().values();
 
                 reply->deleteLater();
             });
@@ -176,7 +173,7 @@ void devPLC::writeState()
     }
 
     QModbusReply *reply = this->dev->sendWriteRequest(
-                QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->addrState, QVector<quint16>(1, 2)),
+                QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->addrState, QVector<quint16>(1, 1)),
                 this->serverAddr);
     if (!reply) {
         qDebug() << "Write error: " << this->dev->errorString();
@@ -184,11 +181,11 @@ void devPLC::writeState()
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, [=]() {
                 if (reply->error() == QModbusDevice::ProtocolError) {
-                    qDebug() << "Write state error: " << reply->errorString() << reply->rawResult().exceptionCode();
+                    qDebug() << "Write state protocol error: " << reply->errorString() << reply->rawResult().exceptionCode();
                 } else if (reply->error() != QModbusDevice::NoError) {
                     qDebug() << "Write state error: " << reply->errorString() << reply->error();
                 }
-                qDebug() << "Wrote: " << reply->result().values();
+                qDebug() << "Wrote state: " << reply->result().values();
 
                 reply->deleteLater();
             });
@@ -205,7 +202,7 @@ devPLCServer::devPLCServer(QObject *parent) : QObject(parent)
     this->dev = new QModbusTcpServer(this);
 
     this->dev->setMap({
-                          { QModbusDataUnit::HoldingRegisters, { QModbusDataUnit::HoldingRegisters, 0, 1300 } }
+                          { QModbusDataUnit::HoldingRegisters, { QModbusDataUnit::HoldingRegisters, 0, 200 } }
                       });
 
     this->dev->setConnectionParameter(QModbusDevice::NetworkPortParameter, this->port);

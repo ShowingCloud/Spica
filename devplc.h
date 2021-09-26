@@ -27,18 +27,20 @@ private:
 #ifdef QT_DEBUG
     const QString addr = "127.0.0.1";
     const int port = 10502;
+    //const QString addr = "192.168.107.188";
+    //const int port = 502;
 #else
     const QString addr = "192.168.2.1";
-    const int port = 102;
+    const int port = 502;
 #endif
     const int timeout = 1000;
     const int retries = 3;
     const int serverAddr = 255;
-    const int startRead = 41000;
-    const quint16 lenRead = 123;
-    const int startWrite = 41140;
-    const quint16 lenWrite = 18;
-    const int addrState = 41200;
+    const int startRead = 0;
+    const quint16 lenRead = 68;
+    const int startWrite = 70;
+    const quint16 lenWrite = 9;
+    const int addrState = 100;
 
     QModbusTcpClient *dev = nullptr;
     QTimer *timer = nullptr;
@@ -64,7 +66,7 @@ public:
 
 private:
     QModbusTcpServer *dev = nullptr;
-    const QString addr = "127.0.0.1";
+    const QString addr = "0.0.0.0";
     const int port = 10502;
     const int serverAddr = 255;
 };
