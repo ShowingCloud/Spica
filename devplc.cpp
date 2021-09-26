@@ -7,8 +7,8 @@ devPLC::devPLC(QObject *parent) : QObject(parent)
     this->dev = new QModbusTcpClient(this);
     this->dev->setConnectionParameter(QModbusDevice::NetworkPortParameter, this->port);
     this->dev->setConnectionParameter(QModbusDevice::NetworkAddressParameter, this->addr);
-    this->dev->setTimeout(this->timeout);
-    this->dev->setNumberOfRetries(this->retries);
+    //this->dev->setTimeout(this->timeout);
+    //this->dev->setNumberOfRetries(this->retries);
     qDebug() << "Connecting: " << this->dev->connectDevice();
 
     connect(this->dev, &QModbusTcpClient::errorOccurred, [this](QModbusDevice::Error) {
