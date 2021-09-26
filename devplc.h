@@ -46,7 +46,7 @@ private:
     QVector<quint16> writeValue = QVector<quint16>(lenWrite, 1);
     QVector<quint16> stateValue;
 #ifndef QT_NO_DEBUG
-    const QVector<quint16> &readValueAllOne = QVector<quint16>(lenRead, 1);
+    const QVector<quint16> readValueAllOne = QVector<quint16>(lenRead, 1);
 #endif
 };
 

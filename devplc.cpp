@@ -29,7 +29,9 @@ devPLC::devPLC(QObject *parent) : QObject(parent)
     });
     timer->start(0);
 
+#ifndef QT_NO_DEBUG
     qDebug() << "initializer " << this->readValueAllOne;
+#endif
 }
 
 devPLC::~devPLC()
