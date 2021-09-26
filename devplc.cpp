@@ -160,7 +160,6 @@ void devPLC::writeReadData()
     QModbusReply *reply = this->dev->sendWriteRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, this->startRead, this->readValueAllOne),
                 this->serverAddr);
-    qDebug() << "write ended" << reply;
     reply->deleteLater();
 }
 #endif

@@ -51,7 +51,15 @@ private:
 };
 
 
-#ifndef QT_NO_DEBUG
+#ifdef QT_NO_DEBUG
+class devPLCServer : public QObject
+{
+    Q_OBJECT
+
+public:
+    explicit devPLCServer(QObject *parent = nullptr) : QObject(parent) {};
+};
+#else
 #include <QModbusTcpServer>
 
 class devPLCServer : public QObject
