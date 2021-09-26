@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
-#ifdef QT_NO_DEBUG
+#ifdef QT_DEBUG
     engine.rootContext()->setContextProperty("debug", true);
 #else
     engine.rootContext()->setContextProperty("debug", false);
