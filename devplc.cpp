@@ -214,9 +214,7 @@ devPLCServer::devPLCServer(QObject *parent) : QObject(parent)
     qDebug() << "Listening: " << this->dev->connectDevice();
 
     connect(this->dev, &QModbusTcpServer::dataWritten, [](QModbusDataUnit::RegisterType type, int addr, int size) {
-        Q_UNUSED(type)
-        Q_UNUSED(addr)
-        Q_UNUSED(size)
+        qDebug() << "Server data written" << type << addr << size;
     });
     connect(this->dev, &QModbusTcpServer::stateChanged, [](int state) {
         qDebug() << "Server state changed: " << state;

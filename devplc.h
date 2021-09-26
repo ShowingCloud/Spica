@@ -66,7 +66,7 @@ private:
     QModbusTcpServer *dev = nullptr;
     const QString addr = "127.0.0.1";
     const int port = 10502;
-    const int serverAddr = 255;
+    const int serverAddr = 0;
 };
 
 #else
