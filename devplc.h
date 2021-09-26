@@ -28,7 +28,7 @@ private:
     const QString addr = "127.0.0.1";
     const int port = 10502;
 #else
-    const QString addr = "192.168.2.1";
+    const QString addr = "192.168.2.3";
     const int port = 102;
 #endif
     const int timeout = 1000;
