@@ -19,14 +19,14 @@ int main(int argc, char *argv[])
     qmlRegisterType<devPLCServer>("spica.devplc", 1, 0, "DevPLCServer");
 
     QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-    if (engine.rootObjects().isEmpty())
-        return -1;
 #ifdef QT_DEBUG
     engine.rootContext()->setContextProperty("debug", true);
 #else
     engine.rootContext()->setContextProperty("debug", false);
 #endif
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    if (engine.rootObjects().isEmpty())
+        return -1;
 
     return app.exec();
 }
