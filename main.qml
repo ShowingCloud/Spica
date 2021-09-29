@@ -11,6 +11,7 @@ Window {
     readonly property int widthStack: widthWindow
 
     readonly property int defaultMarginAndTextWidthHeight: 30
+    readonly property int frameBorderWidth: 15
     readonly property int defaultLabelFontSize: 20
     readonly property int rectBigFontSize: 15
     readonly property int rectSmallFontSize: 12 // 8
@@ -20,32 +21,8 @@ Window {
     height: 800
     title: qsTr("Deep Learning Defect Detection")
 
-    Item {
-        component LabeledFrame : Rectangle {
-            property string title
-
-            anchors.fill: parent
-            anchors.margins: 20
-            radius: 5
-            border.width: 1
-
-            Label {
-                x: 15
-                y: -10
-                text: title
-                font.pixelSize: defaultLabelFontSize
-                background: Rectangle {
-                    anchors.fill: parent
-                    anchors.margins: -5
-                    color: "white"
-                }
-            }
-        }
-    }
-
     TabBar {
         id: bar
-        //height: 40
         width: parent.width
         TabButton {
             text: qsTr("Preference")
@@ -82,24 +59,30 @@ Window {
 
         Item {
             id: tabPreference
-
-            LabeledFrame { title: qsTr("Preference") }
-            WinPreference{}
+            LabeledFrame {
+                label: qsTr("Preference")
+                WinPreference{}
+            }
         }
         Item {
             id: tabState
+            LabeledFrame { label: qsTr("Camera State") }
         }
         Item {
             id: tabDetection
+            LabeledFrame { label: qsTr("Real Time Detection") }
         }
         Item {
             id: tabHistory
+            LabeledFrame { label: qsTr("History") }
         }
         Item {
             id: tabStatistics
+            LabeledFrame { label: qsTr("Statistics") }
         }
         Item {
             id: tabTagging
+            LabeledFrame { label: qsTr("Data Tagging") }
         }
     }
 }

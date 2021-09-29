@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>WinPreference.qml</file>
+        <file>LabeledFrame.qml</file>
     </qresource>
 </RCC>
