@@ -7,7 +7,6 @@ import spica.devplc 1.0
 Item {
     id: winPreference
     anchors.fill: parent
-    anchors.margins: frameBorderWidth
 
     DevPLC {
     }
@@ -16,20 +15,20 @@ Item {
     }
 
     Rectangle {
-        width: (parent.width - 2 * frameBorderWidth - defaultMarginAndTextWidthHeight) / 2
-        height: parent.height - 2 * frameBorderWidth
-        x: frameBorderWidth
-        y: frameBorderWidth
+        width: (parent.width - frameBorderWidth) / 2
+        height: parent.height - frameBorderWidth
+        x: frameBorderWidth / 2
+        y: frameBorderWidth / 2
         LabeledFrame {
             label: qsTr("Camera Preferences")
         }
     }
 
     Rectangle {
-        width: (parent.width - 2 * frameBorderWidth - defaultMarginAndTextWidthHeight) / 2
-        height: parent.height - 2 * frameBorderWidth
-        x: (parent.width + defaultMarginAndTextWidthHeight) / 2
-        y: frameBorderWidth
+        width: (parent.width - frameBorderWidth) / 2
+        height: parent.height - frameBorderWidth
+        x: parent.width / 2
+        y: frameBorderWidth / 2
         LabeledFrame {
             label: qsTr("PLC Preferences")
         }

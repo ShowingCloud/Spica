@@ -5,9 +5,10 @@ Item {
     property string label
 
     anchors.fill: parent
+    anchors.margins: frameBorderWidth
+
     Rectangle {
         anchors.fill: parent
-        anchors.margins: frameBorderWidth
         radius: 5
         border.width: 1
 

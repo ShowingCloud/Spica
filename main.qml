@@ -10,8 +10,8 @@ Window {
     readonly property int heightStack: heightWindow - heightTabbar
     readonly property int widthStack: widthWindow
 
-    readonly property int defaultMarginAndTextWidthHeight: 30
-    readonly property int frameBorderWidth: 15
+    readonly property int defaultMarginAndTextWidthHeight: 20
+    readonly property int frameBorderWidth: 20
     readonly property int defaultLabelFontSize: 20
     readonly property int rectBigFontSize: 15
     readonly property int rectSmallFontSize: 12 // 8
