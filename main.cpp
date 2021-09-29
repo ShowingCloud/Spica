@@ -11,6 +11,15 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
+#if 0
+#ifndef QT_DEBUG
+    qInstallMessageHandler(
+                [](QtMsgType type, const QMessageLogContext &context, const QString &msg) {
+        Q_UNUSED(type) Q_UNUSED(context) Q_UNUSED(msg)
+    });
+#endif
+#endif
+
     QTranslator translator;
     translator.load(":/i18n/zh_CN");
     app.installTranslator(&translator);
