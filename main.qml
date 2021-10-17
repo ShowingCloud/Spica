@@ -70,7 +70,10 @@ Window {
         }
         Item {
             id: tabDetection
-            LabeledFrame { label: qsTr("Real Time Detection") }
+            LabeledFrame {
+                label: qsTr("Real Time Detection")
+                WinDetection{}
+            }
         }
         Item {
             id: tabHistory

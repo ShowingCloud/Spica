@@ -14,7 +14,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         devplc.cpp \
-        main.cpp
+        main.cpp \
+        pylon.cpp
 
 RESOURCES += qml.qrc
 
@@ -32,4 +33,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    devplc.h
+    devplc.h \
+    pylon.h
+
+INCLUDEPATH += /opt/pylon/include
+LIBS += -L/opt/pylon/lib -Wl,-E -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
+QMAKE_LFLAGS += -Wl,--enable-new-dtags -Wl,-rpath,/opt/pylon/lib

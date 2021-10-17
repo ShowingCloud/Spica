@@ -4,6 +4,7 @@
 #include <QTranslator>
 
 #include "devplc.h"
+#include "pylon.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,6 +20,8 @@ int main(int argc, char *argv[])
     });
 #endif
 #endif
+
+    pylon::initialize();
 
     QTranslator translator;
     translator.load(":/i18n/zh_CN");
