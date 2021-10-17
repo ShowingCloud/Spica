@@ -82,6 +82,12 @@ jobs:
         with:
           path: ../Qt
           key: ${{ runner.os }}-${{ matrix.qt_ver }}-${{ matrix.qt_arch }}-QtCache
+      - name: Cache Pylon SDK
+        id: cache-pylon
+        uses: actions/cache@v1
+        with:
+          path: ../pylon.tar.gz
+          key: ${{ runner.os }}-${{ matrix.qt_ver }}-${{ matrix.qt_arch }}-PylonCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
@@ -96,13 +102,7 @@ jobs:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: pylon.tar.gz
           location: ..
-      - name: Uncompress Pylon SDK
-        uses: master-atul/tar-action@v1.0.2
-        with:
-          command: x
-          files: |
-            ../pylon.tar.gz
-          outPath: pylon
+          cached: ${{ steps.cache-pylon.outputs.cache-hit }}
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
@@ -159,6 +159,12 @@ jobs:
         with:
           path: ../Qt
           key: ${{ runner.os }}-QtCache
+      - name: Cache Pylon SDK
+        id: cache-pylon
+        uses: actions/cache@v1
+        with:
+          path: ../pylon.tar.gz
+          key: ${{ runner.os }}-${{ matrix.qt_ver }}-${{ matrix.qt_arch }}-PylonCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
@@ -171,6 +177,7 @@ jobs:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: pylon.tar.gz
           location: ..
+          cached: ${{ steps.cache-pylon.outputs.cache-hit }}
       - name: Uncompress Pylon SDK
         uses: master-atul/tar-action@v1.0.2
         with:
@@ -211,6 +218,12 @@ jobs:
         with:
           path: ../Qt
           key: ${{ runner.os }}-QtCache
+      - name: Cache Pylon SDK
+        id: cache-pylon
+        uses: actions/cache@v1
+        with:
+          path: ../pylon.tar.gz
+          key: ${{ runner.os }}-${{ matrix.qt_ver }}-${{ matrix.qt_arch }}-PylonCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
@@ -223,13 +236,7 @@ jobs:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: pylon.tar.gz
           location: ..
-      - name: Uncompress Pylon SDK
-        uses: master-atul/tar-action@v1.0.2
-        with:
-          command: x
-          files: |
-            ../pylon.tar.gz
-          outPath: pylon
+          cached: ${{ steps.cache-pylon.outputs.cache-hit }}
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
