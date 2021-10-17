@@ -42,17 +42,14 @@ void pylon::capture()
 {
     camera.GrabOne(5000, result);
 
-    if (result->GrabSucceeded()) {
+    if (result->GrabSucceeded())
         QImage img(static_cast<const quint8 *>(result->GetBuffer()),
                    static_cast<int>(result->GetWidth()),
                    static_cast<int>(result->GetHeight()),
                    QImage::Format_RGB888);
-        qDebug() << "SizeX: " << result->GetWidth();
-        qDebug() << "SizeY: " << result->GetHeight();
-    } else {
+    else
         qDebug() << "Error: " << Qt::hex << result->GetErrorCode() << Qt::dec << " " <<
                     result->GetErrorDescription();
-    }
 
     QString filepath = savePath + "/" + QDateTime::currentDateTime().toString(Qt::ISODate) + "-"
                                         + QUuid::createUuid().toString(QUuid::Id128) + ".png";
