@@ -108,9 +108,6 @@ jobs:
           vc_arch: ${{ matrix.msvc_arch }}
         run: |
           tar zxpf ../pylon/pylon.tar.gz -C ../pylon
-          dir ..
-          dir ..\pylon
-          dir
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
           qmake
           nmake
@@ -179,9 +176,6 @@ jobs:
       - name: Build
         run: |
           tar zxpf ../pylon/pylon.tar.gz -C ../pylon
-          ls -l ..
-          ls -l ../pylon
-          ls -l
           qmake
           make
       - name: Upload Release Asset
@@ -230,9 +224,7 @@ jobs:
       - name: Build
         run: |
           tar zxpf ../pylon/pylon.tar.gz -C ../pylon
-          ls -l ..
-          ls -l ../pylon
-          ls -l
+          ln -s . ../pylon/Headers/pylon
           qmake
           make
           macdeployqt Spica.app -dmg

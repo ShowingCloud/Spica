@@ -36,12 +36,17 @@ HEADERS += \
     devplc.h \
     pylon.h
 
-unix:!macx {
+unix:!macx|debug {
+    INCLUDEPATH += /opt/pylon/include
+    LIBS += -L/opt/pylon/lib -Wl,-E -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
+    QMAKE_LFLAGS += -Wl,--enable-new-dtags -Wl,-rpath,/opt/pylon/lib
+}
+unix:!macx|release {
     INCLUDEPATH += ../pylon/include
     LIBS += -L../pylon/lib -Wl,-E -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
     QMAKE_LFLAGS += -Wl,--enable-new-dtags -Wl,-rpath,../pylon/lib
 }
-macx {
+macx:release {
     INCLUDEPATH += ../pylon/Headers
     LIBS += -L../pylon/Libraries -Wl,-E -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
     QMAKE_LFLAGS += -Wl,-rpath,../pylon/Libraries
