@@ -98,7 +98,7 @@ jobs:
       - name: Uncompress Pylon SDK
         uses: master-atul/tar-action@v1.0.2
         with:
-          command: zxp
+          command: x
           files: |
             pylon.tar.gz
           outPath: pylon
@@ -172,7 +172,7 @@ jobs:
       - name: Uncompress Pylon SDK
         uses: master-atul/tar-action@v1.0.2
         with:
-          command: zxp
+          command: x
           files: |
             pylon.tar.gz
           outPath: pylon
@@ -223,7 +223,7 @@ jobs:
       - name: Uncompress Pylon SDK
         uses: master-atul/tar-action@v1.0.2
         with:
-          command: zxp
+          command: x
           files: |
             pylon.tar.gz
           outPath: pylon
