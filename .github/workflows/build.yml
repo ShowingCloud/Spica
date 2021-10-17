@@ -159,6 +159,7 @@ jobs:
         uses: gautemo/fetch-api-data-action@1.0.2
         with:
           url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=0'
+          file: 'pylon.tar.gz'
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
@@ -201,6 +202,7 @@ jobs:
         uses: gautemo/fetch-api-data-action@1.0.2
         with:
           url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=0'
+          file: 'pylon.tar.gz'
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
