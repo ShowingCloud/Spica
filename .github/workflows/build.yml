@@ -111,7 +111,9 @@ jobs:
         env:
           vc_arch: ${{ matrix.msvc_arch }}
         run: |
+          tar zxpf ../pylon.tar.gz
           dir ..
+          dir
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
           qmake
           nmake
@@ -178,19 +180,14 @@ jobs:
           file-name: pylon.tar.gz
           location: ..
           cached: ${{ steps.cache-pylon.outputs.cache-hit }}
-      - name: Uncompress Pylon SDK
-        uses: master-atul/tar-action@v1.0.2
-        with:
-          command: x
-          files: |
-            ../pylon.tar.gz
-          outPath: pylon
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
       - name: Build
         run: |
+          tar zxpf ../pylon.tar.gz
           ls -l ..
+          ls -l
           qmake
           make
       - name: Upload Release Asset
@@ -242,7 +239,9 @@ jobs:
           fetch-depth: 1
       - name: Build
         run: |
+          tar zxpf ../pylon.tar.gz
           ls -l ..
+          ls -l
           qmake
           make
           macdeployqt Spica.app -dmg
