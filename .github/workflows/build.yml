@@ -92,6 +92,7 @@ jobs:
           arch: ${{ matrix.qt_arch }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
+        if: steps.cache-qt.outputs.cache-hit != 'true'
         uses: carlosperate/download-file-action@v1.0.3
         id: download-pylon
         with:
@@ -165,12 +166,13 @@ jobs:
           version: ${{ matrix.qt_ver }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
+        if: steps.cache-qt.outputs.cache-hit != 'true'
         uses: carlosperate/download-file-action@v1.0.3
         id: download-pylon
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: pylon.tar.gz
-          location: ..
+          location: ../pylon
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
@@ -215,12 +217,13 @@ jobs:
           version: ${{ matrix.qt_ver }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
+        if: steps.cache-qt.outputs.cache-hit != 'true'
         uses: carlosperate/download-file-action@v1.0.3
         id: download-pylon
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: pylon.tar.gz
-          location: ..
+          location: ../pylon
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
