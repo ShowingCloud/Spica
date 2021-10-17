@@ -91,9 +91,12 @@ jobs:
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
         uses: carlosperate/download-file-action@v1.0.3
+        id: download-pylon
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: 'pylon.tar.gz'
+      - name: Print the file path
+          run: echo "The file was downloaded to ${{ steps.download-pylon.outputs.file-path }}"
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
@@ -157,9 +160,12 @@ jobs:
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
         uses: carlosperate/download-file-action@v1.0.3
+        id: download-pylon
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: 'pylon.tar.gz'
+      - name: Print the file path
+          run: echo "The file was downloaded to ${{ steps.download-pylon.outputs.file-path }}"
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
@@ -200,9 +206,12 @@ jobs:
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
         uses: carlosperate/download-file-action@v1.0.3
+        id: download-pylon
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: 'pylon.tar.gz'
+      - name: Print the file path
+          run: echo "The file was downloaded to ${{ steps.download-pylon.outputs.file-path }}"
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
