@@ -90,7 +90,7 @@ jobs:
           arch: ${{ matrix.qt_arch }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
-        uses: gautemo/fetch-api-data-action
+        uses: gautemo/fetch-api-data-action@1.0.2
         with:
           url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=0'
           file: 'pylon.tar.gz'
@@ -156,7 +156,7 @@ jobs:
           version: ${{ matrix.qt_ver }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
-        uses: gautemo/fetch-api-data-action
+        uses: gautemo/fetch-api-data-action@1.0.2
         with:
           url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=0'
       - uses: actions/checkout@v1
@@ -198,7 +198,7 @@ jobs:
           version: ${{ matrix.qt_ver }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
-        uses: gautemo/fetch-api-data-action
+        uses: gautemo/fetch-api-data-action@1.0.2
         with:
           url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=0'
       - uses: actions/checkout@v1
