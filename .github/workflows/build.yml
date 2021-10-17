@@ -95,8 +95,6 @@ jobs:
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: 'pylon.tar.gz'
-      - name: Print the file path
-        run: echo "The file was downloaded to ${{ steps.download-pylon.outputs.file-path }}"
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
@@ -105,7 +103,7 @@ jobs:
         env:
           vc_arch: ${{ matrix.msvc_arch }}
         run: |
-          dir
+          dir ..
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
           qmake
           nmake
@@ -164,14 +162,12 @@ jobs:
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: 'pylon.tar.gz'
-      - name: Print the file path
-        run: echo "The file was downloaded to ${{ steps.download-pylon.outputs.file-path }}"
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
       - name: Build
         run: |
-          ls -l
+          ls -l ..
           qmake
           make
       - name: Upload Release Asset
@@ -210,14 +206,12 @@ jobs:
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: 'pylon.tar.gz'
-      - name: Print the file path
-        run: echo "The file was downloaded to ${{ steps.download-pylon.outputs.file-path }}"
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
       - name: Build
         run: |
-          ls -l
+          ls -l ..
           qmake
           make
           macdeployqt Spica.app -dmg
