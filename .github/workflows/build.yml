@@ -94,13 +94,14 @@ jobs:
         id: download-pylon
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
-          file-name: 'pylon.tar.gz'
+          file-name: pylon.tar.gz
+          location: ..
       - name: Uncompress Pylon SDK
         uses: master-atul/tar-action@v1.0.2
         with:
           command: x
           files: |
-            pylon.tar.gz
+            ../pylon.tar.gz
           outPath: pylon
       - uses: actions/checkout@v1
         with:
@@ -168,13 +169,14 @@ jobs:
         id: download-pylon
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
-          file-name: 'pylon.tar.gz'
+          file-name: pylon.tar.gz
+          location: ..
       - name: Uncompress Pylon SDK
         uses: master-atul/tar-action@v1.0.2
         with:
           command: x
           files: |
-            pylon.tar.gz
+            ../pylon.tar.gz
           outPath: pylon
       - uses: actions/checkout@v1
         with:
@@ -219,13 +221,14 @@ jobs:
         id: download-pylon
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
-          file-name: 'pylon.tar.gz'
+          file-name: pylon.tar.gz
+          location: ..
       - name: Uncompress Pylon SDK
         uses: master-atul/tar-action@v1.0.2
         with:
           command: x
           files: |
-            pylon.tar.gz
+            ../pylon.tar.gz
           outPath: pylon
       - uses: actions/checkout@v1
         with:
