@@ -44,8 +44,7 @@ unix:!macx {
     }
     CONFIG(release, debug|release) {
         INCLUDEPATH += ../Pylon/Linux/include
-        LIBS += -L../Pylon/Linux/lib -Wl,-E -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
-        QMAKE_LFLAGS += -Wl,--enable-new-dtags -Wl,-rpath,../Pylon/Linux/lib
+        LIBS += -L../Pylon/Linux/lib -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
     }
 }
 macx {
@@ -57,12 +56,15 @@ macx {
     CONFIG(release, debug|release) {
         INCLUDEPATH += ../Pylon/MacOS/Headers ../Pylon/MacOS/Headers/GenICam
         LIBS += -L../Pylon/MacOS/Libraries -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
-        QMAKE_LFLAGS += -Wl,-rpath,../Pylon/MacOS/Libraries
     }
 }
 win32 {
     CONFIG(release, debug|release) {
         INCLUDEPATH += ..\Pylon\Windows\include
-        LIBS += -L..\Pylon\Windows\lib\x64 -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
+        QMAKE_LFLAGS += -LIBPATH:..\Pylon\Windows\lib\x64
+    }
+    CONFIG(debug, debug|release) {
+        INCLUDEPATH += $$(PYLON_DEV_DIR)\include
+        QMAKE_LFLAGS += -LIBPATH:\"$$(PYLON_DEV_DIR)\lib\x64\"
     }
 }
