@@ -63,7 +63,6 @@ macx {
 win32 {
     CONFIG(release, debug|release) {
         INCLUDEPATH += ../pylon/Windows/include
-        LIBS += -L../pylon/Windows/lib -Wl,-E -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
-        QMAKE_LFLAGS += -Wl,--enable-new-dtags -Wl,-rpath,../pylon/Windows/lib
+        LIBS += -L../pylon/Windows/lib/x64 -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
     }
 }
