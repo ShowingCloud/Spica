@@ -106,7 +106,7 @@ jobs:
         shell: cmd
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
-          tar zxpf ../Pylon/pylon.tar.gz -C ../Pylon
+          tar zxf ../Pylon/pylon.tar.gz -C ../Pylon
       - name: Build on MSVC
         shell: cmd
         env:
