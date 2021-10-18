@@ -50,12 +50,12 @@ unix:!macx {
 }
 macx {
     CONFIG(debug, debug|release) {
-        INCLUDEPATH += /Library/Frameworks/pylon.framework/Headers
+        INCLUDEPATH += /Library/Frameworks/pylon.framework/Headers /Library/Frameworks/pylon.framework/Headers/GenICam
         LIBS += -L/Library/Frameworks/pylon.framework/Libraries -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
         QMAKE_LFLAGS += -Wl,-rpath,/Library/Frameworks/pylon.framework/Libraries
     }
     CONFIG(release, debug|release) {
-        INCLUDEPATH += ../pylon/Headers
+        INCLUDEPATH += ../pylon/Headers ../pylon/Headers/GenICam
         LIBS += -L../pylon/Libraries -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
         QMAKE_LFLAGS += -Wl,-rpath,../pylon/Libraries
     }
