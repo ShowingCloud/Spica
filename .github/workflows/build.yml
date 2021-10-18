@@ -105,10 +105,10 @@ jobs:
       - name: Extract Pylon
         shell: cmd
         if: steps.cache-qt.outputs.cache-hit != 'true'
+        continue-on-error: true
         run: |
           tar zxpf ../Pylon/pylon.tar.gz -C ../Pylon
       - name: Build on MSVC
-        if: always()
         shell: cmd
         env:
           vc_arch: ${{ matrix.msvc_arch }}
