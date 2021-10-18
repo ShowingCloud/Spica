@@ -81,8 +81,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ${{ github.workspace }}/work/Spica/Qt
-            ${{ github.workspace }}/work/Spica/Pylon
+            ${{ github.workspace }}/../Qt
+            ${{ github.workspace }}/../Pylon
           key: ${{ runner.os }}-${{ matrix.qt_ver }}-${{ matrix.qt_arch }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -112,7 +112,6 @@ jobs:
         env:
           vc_arch: ${{ matrix.msvc_arch }}
         run: |
-          dir ${{ github.workspace }}
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
           qmake
           nmake
@@ -159,8 +158,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ${{ github.workspace }}/work/Spica/Qt
-            ${{ github.workspace }}/work/Spica/Pylon
+            ${{ github.workspace }}/../Qt
+            ${{ github.workspace }}/../Pylon
           key: ${{ runner.os }}-${{ matrix.os }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -184,7 +183,6 @@ jobs:
           tar zxpf ../Pylon/pylon.tar.gz -C ../Pylon
       - name: Build
         run: |
-          ls ${{ github.workspace }}
           qmake
           make
       - name: Upload Release Asset
@@ -211,8 +209,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ${{ github.workspace }}/work/Spica/Qt
-            ${{ github.workspace }}/work/Spica/Pylon
+            ${{ github.workspace }}/../Qt
+            ${{ github.workspace }}/../Pylon
           key: ${{ runner.os }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -237,7 +235,6 @@ jobs:
           ln -s . ../Pylon/MacOS/Headers/pylon
       - name : Build
         run: |
-          ls ${{ github.workspace }}
           qmake
           make
           macdeployqt Spica.app -dmg
