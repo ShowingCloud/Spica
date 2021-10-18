@@ -82,7 +82,7 @@ jobs:
         with:
           path: |
             ~/work/Spica/Qt
-            ~/work/Spica/pylon
+            ~/work/Spica/Pylon
           key: ${{ runner.os }}-${{ matrix.qt_ver }}-${{ matrix.qt_arch }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -98,7 +98,7 @@ jobs:
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: pylon.tar.gz
-          location: ../pylon
+          location: ../Pylon
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
@@ -107,7 +107,7 @@ jobs:
         env:
           vc_arch: ${{ matrix.msvc_arch }}
         run: |
-          tar zxpf ../pylon/pylon.tar.gz -C ../pylon
+          tar zxpf ../Pylon/pylon.tar.gz -C ../Pylon
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
           qmake
           nmake
@@ -155,7 +155,7 @@ jobs:
         with:
           path: |
             ~/work/Spica/Qt
-            ~/work/Spica/pylon
+            ~/work/Spica/Pylon
           key: ${{ runner.os }}-${{ matrix.os }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -169,13 +169,13 @@ jobs:
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: pylon.tar.gz
-          location: ../pylon
+          location: ../Pylon
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
       - name: Build
         run: |
-          tar zxpf ../pylon/pylon.tar.gz -C ../pylon
+          tar zxpf ../Pylon/pylon.tar.gz -C ../Pylon
           qmake
           make
       - name: Upload Release Asset
@@ -203,7 +203,7 @@ jobs:
         with:
           path: |
             ~/work/Spica/Qt
-            ~/work/Spica/pylon
+            ~/work/Spica/Pylon
           key: ${{ runner.os }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -217,14 +217,14 @@ jobs:
         with:
           file-url: 'https://www.dropbox.com/s/lc6ssugti4wpsjx/pylon.tar.gz?dl=1'
           file-name: pylon.tar.gz
-          location: ../pylon
+          location: ../Pylon
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
       - name: Build
         run: |
-          tar zxpf ../pylon/pylon.tar.gz -C ../pylon
-          ln -s . ../pylon/Headers/pylon
+          tar zxpf ../Pylon/pylon.tar.gz -C ../Pylon
+          ln -s . ../Pylon/Headers/pylon
           qmake
           make
           macdeployqt Spica.app -dmg
