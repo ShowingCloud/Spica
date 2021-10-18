@@ -55,7 +55,7 @@ macx {
         QMAKE_LFLAGS += -Wl,-rpath,/Library/Frameworks/pylon.framework/Libraries
     }
     CONFIG(release, debug|release) {
-        INCLUDEPATH += ../Pylon/Headers ../Pylon/MacOS/Headers/GenICam
+        INCLUDEPATH += ../Pylon/MacOS/Headers ../Pylon/MacOS/Headers/GenICam
         LIBS += -L../Pylon/MacOS/Libraries -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
         QMAKE_LFLAGS += -Wl,-rpath,../Pylon/MacOS/Libraries
     }
