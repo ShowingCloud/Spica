@@ -225,6 +225,7 @@ jobs:
         run: |
           tar zxpf ../pylon/pylon.tar.gz -C ../pylon
           ln -s . ../pylon/Headers/pylon
+          ln -s ../pylon/Headers/GenICam/* ../pylon/Headers/
           qmake
           make
           macdeployqt Spica.app -dmg

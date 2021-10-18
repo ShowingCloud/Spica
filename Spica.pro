@@ -48,8 +48,15 @@ unix:!macx {
         QMAKE_LFLAGS += -Wl,--enable-new-dtags -Wl,-rpath,../pylon/lib
     }
 }
-macx:release {
-    INCLUDEPATH += ../pylon/Headers
-    LIBS += -L../pylon/Libraries -Wl,-E -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
-    QMAKE_LFLAGS += -Wl,-rpath,../pylon/Libraries
+macx {
+    CONFIG(debug, debug|release) {
+        INCLUDEPATH += /Library/Frameworks/pylon.framework/Headers
+        LIBS += -L/Library/Frameworks/pylon.framework/Libraries -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
+        QMAKE_LFLAGS += -Wl,-rpath,/Library/Frameworks/pylon.framework/Libraries
+    }
+    CONFIG(release, debug|release) {
+        INCLUDEPATH += ../pylon/Headers
+        LIBS += -L../pylon/Libraries -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
+        QMAKE_LFLAGS += -Wl,-rpath,../pylon/Libraries
+    }
 }
