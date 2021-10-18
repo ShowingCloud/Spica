@@ -224,7 +224,7 @@ jobs:
       - name: Build
         run: |
           tar zxpf ../Pylon/pylon.tar.gz -C ../Pylon
-          ln -s . ../Pylon/Headers/pylon
+          ln -s . ../Pylon/MacOS/Headers/pylon
           qmake
           make
           macdeployqt Spica.app -dmg
