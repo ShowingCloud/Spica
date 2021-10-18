@@ -81,8 +81,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/work/Spica/Qt
-            ~/work/Spica/Pylon
+            ${HOME}/work/Spica/Qt
+            ${HOME}/work/Spica/Pylon
           key: ${{ runner.os }}-${{ matrix.qt_ver }}-${{ matrix.qt_arch }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -154,8 +154,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/work/Spica/Qt
-            ~/work/Spica/Pylon
+            ${HOME}/work/Spica/Qt
+            ${HOME}/work/Spica/Pylon
           key: ${{ runner.os }}-${{ matrix.os }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -202,8 +202,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/work/Spica/Qt
-            ~/work/Spica/Pylon
+            ${HOME}/work/Spica/Qt
+            ${HOME}/work/Spica/Pylon
           key: ${{ runner.os }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
