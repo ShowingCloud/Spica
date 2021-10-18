@@ -48,7 +48,7 @@ void pylon::capture()
                    static_cast<int>(result->GetHeight()),
                    QImage::Format_RGB888);
     else
-        qDebug() << "Error: " << Qt::hex << result->GetErrorCode() << Qt::dec << " " <<
+        qDebug() << "Error: " << QString::number(result->GetErrorCode(), 16) << " " <<
                     result->GetErrorDescription();
 
     QString filepath = savePath + "/" + QDateTime::currentDateTime().toString(Qt::ISODate) + "-"
