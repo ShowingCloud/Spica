@@ -43,9 +43,9 @@ unix:!macx {
         QMAKE_LFLAGS += -Wl,--enable-new-dtags -Wl,-rpath,/opt/pylon/lib
     }
     CONFIG(release, debug|release) {
-        INCLUDEPATH += ../pylon/include
-        LIBS += -L../pylon/lib -Wl,-E -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
-        QMAKE_LFLAGS += -Wl,--enable-new-dtags -Wl,-rpath,../pylon/lib
+        INCLUDEPATH += ../pylon/Linux/include
+        LIBS += -L../pylon/Linux/lib -Wl,-E -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
+        QMAKE_LFLAGS += -Wl,--enable-new-dtags -Wl,-rpath,../pylon/Linux/lib
     }
 }
 macx {
@@ -55,8 +55,15 @@ macx {
         QMAKE_LFLAGS += -Wl,-rpath,/Library/Frameworks/pylon.framework/Libraries
     }
     CONFIG(release, debug|release) {
-        INCLUDEPATH += ../pylon/Headers ../pylon/Headers/GenICam
-        LIBS += -L../pylon/Libraries -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
-        QMAKE_LFLAGS += -Wl,-rpath,../pylon/Libraries
+        INCLUDEPATH += ../pylon/Headers ../pylon/MacOS/Headers/GenICam
+        LIBS += -L../MacOS/pylon/Libraries -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
+        QMAKE_LFLAGS += -Wl,-rpath,../MacOS/pylon/Libraries
+    }
+}
+win32 {
+    CONFIG(release, debug|release) {
+        INCLUDEPATH += ../pylon/Windows/include
+        LIBS += -L../pylon/Windows/lib -Wl,-E -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
+        QMAKE_LFLAGS += -Wl,--enable-new-dtags -Wl,-rpath,../pylon/Windows/lib
     }
 }
