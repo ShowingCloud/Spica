@@ -221,10 +221,13 @@ jobs:
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
-      - name: Build
+      - name: Unpack Pylon
+        if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
           tar zxpf ../Pylon/pylon.tar.gz -C ../Pylon
           ln -s . ../Pylon/MacOS/Headers/pylon
+      - name : Build
+        run: |
           qmake
           make
           macdeployqt Spica.app -dmg

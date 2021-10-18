@@ -61,10 +61,18 @@ macx {
 win32 {
     CONFIG(release, debug|release) {
         INCLUDEPATH += ..\Pylon\Windows\include
-        QMAKE_LFLAGS += -LIBPATH:..\Pylon\Windows\lib\x64
+        !contains(QMAKE_TARGET.arch, x86_64) {
+            QMAKE_LFLAGS += -LIBPATH:..\Pylon\Windows\lib\x64
+        } else {
+            QMAKE_LFLAGS += -LIBPATH:..\Pylon\Windows\lib\Win32
+        }
     }
     CONFIG(debug, debug|release) {
         INCLUDEPATH += $$(PYLON_DEV_DIR)\include
-        QMAKE_LFLAGS += -LIBPATH:\"$$(PYLON_DEV_DIR)\lib\x64\"
+        !contains(QMAKE_TARGET.arch, x86_64) {
+            QMAKE_LFLAGS += -LIBPATH:\"$$(PYLON_DEV_DIR)\lib\x64\"
+        } else {
+            QMAKE_LFLAGS += -LIBPATH:\"$$(PYLON_DEV_DIR)\lib\Win32\"
+        }
     }
 }
