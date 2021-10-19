@@ -37,17 +37,17 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonType<devPLC>("spica.devplc", 1, 0, "DevPLC", [&app](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
-        return new devPLC(&app);
+        return new devPLC();
     });
     qmlRegisterSingletonType<devPLCServer>("spica.devplc", 1, 0, "DevPLCServer", [&app](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
-        return new devPLCServer(&app);
+        return new devPLCServer();
     });
     qmlRegisterSingletonType<frontend>("spica.frontend", 1, 0, "Frontend", [&app](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
-        return new frontend(&app);
+        return new frontend();
     });
 
     QQmlApplicationEngine engine;
