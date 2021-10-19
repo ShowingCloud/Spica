@@ -29,6 +29,8 @@ pylon::~pylon()
 
 void pylon::initialize(QObject *parent)
 {
+    QDir::current().mkdir(savePath);
+
     Pylon::PylonInitialize();
     Pylon::DeviceInfoList pylonList;
     if (Pylon::CTlFactory::GetInstance().EnumerateDevices(pylonList) != 0)
@@ -36,13 +38,11 @@ void pylon::initialize(QObject *parent)
             pylon *p = new pylon(dev, parent);
             devList << p;
         }
-
-    QDir::current().mkdir(savePath);
 }
 
 void pylon::destroy()
 {
-    for (const pylon *p : qAsConst(devList))
+    for (pylon *p : qAsConst(devList))
         delete p;
     Pylon::PylonTerminate();
 }
