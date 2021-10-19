@@ -49,3 +49,32 @@ bool database::createTable()
     }
     return true;
 }
+
+const QString database::getRecentImages() const
+{
+    dbModel->setTable(DB_TABLES[DB_TBL_IMG]);
+    dbModel->setFilter("CamID=" + QString::number(0));
+    dbModel->setSort(3, Qt::DescendingOrder);
+    dbModel->select();
+    QSqlRecord r = dbModel->record(0);
+
+    return r.value("Filename").value<QString>();
+}
+
+const QStringList database::getRecentImages(const int  num) const
+{
+    dbModel->setTable(DB_TABLES[DB_TBL_IMG]);
+    dbModel->setFilter("CamID=" + QString::number(0));
+    dbModel->setSort(3, Qt::DescendingOrder);
+    dbModel->select();
+
+    QStringList ret = {};
+    for (int i = 0; i < std::min(dbModel->rowCount(), num); ++i) {
+        QSqlRecord r = dbModel->record(i);
+        if (r.value("Id").toString() != "") {
+            ret << r.value("Filename").value<QString>();
+        }
+    }
+
+    return ret;
+}

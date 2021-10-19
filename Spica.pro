@@ -15,6 +15,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         database.cpp \
         devplc.cpp \
+        frontend.cpp \
         main.cpp \
         pylon.cpp
 
@@ -36,6 +37,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     database.h \
     devplc.h \
+    frontend.h \
     pylon.h
 
 unix:!macx {

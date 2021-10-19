@@ -20,6 +20,9 @@ public:
 
     friend database &operator<< (database &db, const pylon &py);
 
+    const QString getRecentImages() const;
+    const QStringList getRecentImages(const int  num) const;
+
     enum DB_TBL { DB_TBL_IMG };
     static const inline DB_TBL DB_TBL_ALL[] = { DB_TBL_IMG };
     enum DB_RET { DB_RET_SUCCESS };

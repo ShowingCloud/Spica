@@ -1,4 +1,7 @@
-import QtQuick 2.0
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+
+import spica.frontend 1.0
 
 Item {
     id: winDetection
@@ -6,11 +9,23 @@ Item {
 
     Image {
         id: image
-        x: 0
-        y: 0
+        x: frameBorderWidth / 2
+        y: frameBorderWidth / 2
         width: 400
         height: 300
         fillMode: Image.Stretch
-        source: "images/2021-10-18T03:34:23-69927b5441074cdda13bbf077374e7d1.png"
+        source: ""
+    }
+
+    Button {
+        id: buttonRefresh
+        anchors.horizontalCenter: image.horizontalCenter
+        anchors.top: image.bottom
+        text: "Refresh"
+
+        onClicked: {
+            console.log(Frontend.getRecentImages(10))
+            image.source = Frontend.getRecentImages()
+        }
     }
 }

@@ -6,6 +6,7 @@
 #include "devplc.h"
 #include "pylon.h"
 #include "database.h"
+#include "frontend.h"
 
 database *globalDB;
 
@@ -24,15 +25,22 @@ int main(int argc, char *argv[])
 #endif
 #endif
 
-    globalDB = new database();
-    pylon::initialize();
-
     QTranslator translator;
     translator.load(":/i18n/zh_CN");
     app.installTranslator(&translator);
 
+    globalDB = new database();
+    pylon::initialize();
+
     qmlRegisterType<devPLC>("spica.devplc", 1, 0, "DevPLC");
     qmlRegisterType<devPLCServer>("spica.devplc", 1, 0, "DevPLCServer");
+
+    qmlRegisterSingletonType<frontend>("spica.frontend", 1, 0, "Frontend", [&](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+
+        return new frontend(&app);
+    });
 
     QQmlApplicationEngine engine;
 #ifdef QT_DEBUG
