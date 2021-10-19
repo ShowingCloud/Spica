@@ -12,7 +12,7 @@ pylon::pylon(const Pylon::CDeviceInfo dev, QObject *parent)
     : QObject(parent), camera(Pylon::CTlFactory::GetInstance().CreateDevice(dev))
 {
     qDebug() << "Using device: " << camera.GetDeviceInfo().GetModelName();
-    camera.MaxNumBuffer = 5;
+    camera.MaxNumBuffer = 1;
 
     QTimer *captureTimer = new QTimer(this);
     QObject::connect(captureTimer, &QTimer::timeout, [&]() {
@@ -23,10 +23,11 @@ pylon::pylon(const Pylon::CDeviceInfo dev, QObject *parent)
 
 pylon::~pylon()
 {
-    Pylon::PylonTerminate();
+    camera.DestroyDevice();
+    qDebug() << "Destroyed" << this;
 }
 
-void pylon::initialize()
+void pylon::initialize(const QObject *parent)
 {
     Pylon::PylonInitialize();
     Pylon::DeviceInfoList pylonList;
@@ -37,6 +38,13 @@ void pylon::initialize()
         }
 
     QDir::current().mkdir(savePath);
+}
+
+void pylon::destroy()
+{
+    for (const pylon *p : qAsConst(devList))
+        delete p;
+    Pylon::PylonTerminate();
 }
 
 void pylon::capture()

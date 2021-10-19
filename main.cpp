@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     app.installTranslator(&translator);
 
     globalDB = new database();
-    pylon::initialize();
+    pylon::initialize(&app);
 
     qmlRegisterType<devPLC>("spica.devplc", 1, 0, "DevPLC");
     qmlRegisterType<devPLCServer>("spica.devplc", 1, 0, "DevPLCServer");
@@ -52,5 +52,8 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
         return -1;
 
-    return app.exec();
+    int ret = app.exec();
+    pylon::destroy();
+    delete globalDB;
+    return ret;
 }
