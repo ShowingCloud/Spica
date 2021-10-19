@@ -54,5 +54,5 @@ void pylon::capture()
     QString filepath = savePath + "/" + QDateTime::currentDateTime().toString(Qt::ISODate) + "-"
                                         + QUuid::createUuid().toString(QUuid::Id128) + ".png";
     Pylon::CImagePersistence::Save(Pylon::EImageFileFormat::ImageFileFormat_Png,
-                                   filepath.toStdString().c_str(), result);
+                                   filepath.replace(":", "-").toStdString().c_str(), result);
 }
