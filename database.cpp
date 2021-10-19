@@ -1,5 +1,6 @@
 #include "database.h"
 
+#include <iso646.h>
 #include <QDebug>
 
 database::database(QObject *parent) : QObject(parent)

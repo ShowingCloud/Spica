@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 #endif
 
     globalDB = new database();
-    pylon::initialize();
+    pylon::initialize(&app);
 
     QTranslator translator;
     translator.load(":/i18n/zh_CN");
@@ -44,5 +44,8 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
         return -1;
 
-    return app.exec();
+    int ret = app.exec();
+    pylon::destroy();
+    delete globalDB;
+    return ret;
 }

@@ -20,7 +20,8 @@ public:
 
     friend database &operator<< (database &db, const pylon &py);
 
-    static void initialize();
+    static void initialize(const QObject *parent);
+    static void destroy();
     void capture();
 
 private:
