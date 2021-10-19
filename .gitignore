@@ -114,3 +114,7 @@ compile_commands.json
 *.dll
 *.exe
 Spica
+
+# Data files
+images/
+database.db

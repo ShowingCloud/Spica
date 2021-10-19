@@ -5,6 +5,9 @@
 
 #include "devplc.h"
 #include "pylon.h"
+#include "database.h"
+
+database *globalDB;
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +24,7 @@ int main(int argc, char *argv[])
 #endif
 #endif
 
+    globalDB = new database();
     pylon::initialize();
 
     QTranslator translator;

@@ -6,6 +6,7 @@
 #include <QUuid>
 
 #include "pylon.h"
+#include "database.h"
 
 pylon::pylon(const Pylon::CDeviceInfo dev, QObject *parent)
     : QObject(parent), camera(Pylon::CTlFactory::GetInstance().CreateDevice(dev))
@@ -51,8 +52,23 @@ void pylon::capture()
         qDebug() << "Error: " << QString::number(result->GetErrorCode(), 16) << " " <<
                     result->GetErrorDescription();
 
-    QString filepath = savePath + "/" + QDateTime::currentDateTime().toString(Qt::ISODate) + "-"
+    currentFilename = savePath + "/" + QDateTime::currentDateTime().toString(Qt::ISODate) + "-"
                                         + QUuid::createUuid().toString(QUuid::Id128) + ".png";
     Pylon::CImagePersistence::Save(Pylon::EImageFileFormat::ImageFileFormat_Png,
-                                   filepath.replace(":", "-").toStdString().c_str(), result);
+                                   currentFilename.replace(":", "-").toStdString().c_str(), result);
+    *globalDB << *this;
+}
+
+database &operator<< (database &db, const pylon &py)
+{
+    db.dbModel->setTable(db.DB_TABLES[db.DB_TBL_IMG]);
+    QSqlRecord r = db.dbModel->record();
+    r.setValue("CamID", 0);
+    r.setValue("StepID", 0);
+    r.setValue("Time", QDateTime::currentDateTime());
+    r.setValue("Filename", py.currentFilename);
+    if (!db.dbModel->insertRecord(-1, r))
+        qDebug() << db.dbModel->lastError();
+
+    return db;
 }
