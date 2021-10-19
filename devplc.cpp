@@ -57,7 +57,7 @@ void devPLC::readData()
 
                 if (reply->error() == QModbusDevice::NoError) {
                     const QModbusDataUnit unit = reply->result();
-                    qDebug() << "Got data: " << unit.values();
+                    qInfo() << "Got data: " << unit.values();
 
                     if (unit.startAddress() == this->startRead)
                         this->readValue = unit.values();
@@ -102,7 +102,7 @@ void devPLC::readState()
 
                 if (reply->error() == QModbusDevice::NoError) {
                     const int state = reply->result().value(0);
-                    qDebug() << "Got state: " << state;
+                    qInfo() << "Got state: " << state;
 
                     if (state == 1) {
                         this->readData();
@@ -142,7 +142,7 @@ void devPLC::writeData()
                 } else if (reply->error() != QModbusDevice::NoError) {
                     qDebug() << "Write data error: " << reply->errorString() << reply->error();
                 }
-                qDebug() << "Wrote data: " << reply->result().values();
+                qInfo() << "Wrote data: " << reply->result().values();
 
                 reply->deleteLater();
             });
@@ -185,7 +185,7 @@ void devPLC::writeState()
                 } else if (reply->error() != QModbusDevice::NoError) {
                     qDebug() << "Write state error: " << reply->errorString() << reply->error();
                 }
-                qDebug() << "Wrote state: " << reply->result().values();
+                qInfo() << "Wrote state: " << reply->result().values();
 
                 reply->deleteLater();
             });

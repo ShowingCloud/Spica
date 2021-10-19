@@ -31,10 +31,21 @@ int main(int argc, char *argv[])
 
     globalDB = new database();
     pylon::initialize(&app);
+    devPLC plc(&app);
+    devPLCServer plcserver(&app);
 
-    qmlRegisterType<devPLC>("spica.devplc", 1, 0, "DevPLC");
-    qmlRegisterType<devPLCServer>("spica.devplc", 1, 0, "DevPLCServer");
+    qmlRegisterSingletonType<devPLC>("spica.devplc", 1, 0, "DevPLC", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
 
+        return new devPLC();
+    });
+    qmlRegisterSingletonType<devPLCServer>("spica.devplc", 1, 0, "DevPLCServer", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+
+        return new devPLCServer();
+    });
     qmlRegisterSingletonType<frontend>("spica.frontend", 1, 0, "Frontend", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)

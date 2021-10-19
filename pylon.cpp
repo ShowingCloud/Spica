@@ -27,13 +27,13 @@ pylon::~pylon()
     qDebug() << "Destroyed" << this;
 }
 
-void pylon::initialize(const QObject *parent)
+void pylon::initialize(QObject *parent)
 {
     Pylon::PylonInitialize();
     Pylon::DeviceInfoList pylonList;
     if (Pylon::CTlFactory::GetInstance().EnumerateDevices(pylonList) != 0)
         for (const Pylon::CDeviceInfo &dev : qAsConst(pylonList)) {
-            pylon *p = new pylon(dev);
+            pylon *p = new pylon(dev, parent);
             devList << p;
         }
 

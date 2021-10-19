@@ -40,6 +40,8 @@ HEADERS += \
     frontend.h \
     pylon.h
 
+DEFINES += QT_NO_INFO_OUTPUT
+
 unix:!macx {
     CONFIG(debug, debug|release) {
         INCLUDEPATH += /opt/pylon/include
