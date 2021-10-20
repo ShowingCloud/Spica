@@ -91,11 +91,11 @@ jobs:
     steps:
       - name: Cache Qt
         id: cache-qt
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2
         with:
           path: |
-            ../Qt
-            ../Pylon
+            ~/Spica/Qt
+            ~/Spica/Pylon
           key: ${{ runner.os }}-${{ matrix.qt_ver }}-${{ matrix.qt_arch }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -128,6 +128,7 @@ jobs:
         env:
           vc_arch: ${{ matrix.msvc_arch }}
         run: |
+          dir ~/Spica
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
           qmake
           nmake
@@ -165,16 +166,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        qt_ver: [5.15.2, 6.2.0]
+        qt_ver: [5.12.11, 5.15.2, 6.2.0]
         os: [ubuntu-18.04, ubuntu-20.04]
+        exclude:
+          include:
+          - qt_ver: 6.2.0
+            qt_module: "qtserialport qtserialbus"
+          - qt_ver: 5.12.11
+            qt_module: ""
+          - qt_ver: 5.15.2
+            qt_module: ""
     steps:
       - name: Cache Qt
         id: cache-qt
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2
         with:
           path: |
-            ../Qt
-            ../Pylon
+            ~/work/Spica/Qt
+            ~/work/Spica/Pylon
           key: ${{ runner.os }}-${{ matrix.os }}-${{ matrix.qt_ver }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -200,6 +209,7 @@ jobs:
           fetch-depth: 1
       - name: Build
         run: |
+          ls ~/work/Spica
           qmake
           make
       - name: Upload Release Asset
@@ -219,15 +229,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        qt_ver: [5.15.2, 6.2.0]
+        qt_ver: [5.12.11, 5.15.2, 6.2.0]
+        exclude:
+          include:
+          - qt_ver: 6.2.0
+            qt_module: "qtserialport qtserialbus"
+          - qt_ver: 5.12.11
+            qt_module: ""
+          - qt_ver: 5.15.2
+            qt_module: ""
     steps:
       - name: Cache Qt
         id: cache-qt
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2
         with:
           path: |
-            ../Qt
-            ../Pylon
+            ~/work/Spica/Qt
+            ~/work/Spica/Pylon
           key: ${{ runner.os }}-${{ matrix.qt_ver }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -254,6 +272,7 @@ jobs:
           fetch-depth: 1
       - name : Build
         run: |
+          ls -l ~/work/Spica
           qmake
           make
           macdeployqt Spica.app -dmg
