@@ -98,6 +98,7 @@ jobs:
           target: ${{ matrix.qt_target }}
           arch: ${{ matrix.qt_arch }}
           aqtversion: ==2.0.0
+          modules: qtserialport qtserialbus
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
         if: steps.cache-qt.outputs.cache-hit != 'true'
@@ -174,6 +175,7 @@ jobs:
         with:
           version: ${{ matrix.qt_ver }}
           aqtversion: ==2.0.0
+          modules: qtserialport qtserialbus
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
         if: steps.cache-qt.outputs.cache-hit != 'true'
@@ -226,6 +228,7 @@ jobs:
         with:
           version: ${{ matrix.qt_ver }}
           aqtversion: ==2.0.0
+          modules: qtserialport qtserialbus
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
         if: steps.cache-qt.outputs.cache-hit != 'true'
