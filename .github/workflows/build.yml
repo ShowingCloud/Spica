@@ -78,7 +78,7 @@ jobs:
     steps:
       - name: Cache Qt
         id: cache-qt
-        uses: actions/cache@v2
+        uses: actions/cache@v1
         with:
           path: ../Qt
           key: ${{ runner.os }}-${{ matrix.qt_ver }}-${{ matrix.qt_arch }}-QtCache
@@ -91,7 +91,7 @@ jobs:
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Cache Pylon
         id: cache-pylon
-        uses: actions/cache@v2
+        uses: actions/cache@v1
         with:
           path: ../Pylon
           key: ${{ runner.os }}-PylonCache
@@ -160,7 +160,7 @@ jobs:
     steps:
       - name: Cache Qt
         id: cache-qt
-        uses: actions/cache@v2
+        uses: actions/cache@v1
         with:
           path: ../Qt
           key: ${{ runner.os }}-${{ matrix.os }}-QtCache
@@ -171,7 +171,7 @@ jobs:
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Cache Pylon
         id: cache-pylon
-        uses: actions/cache@v2
+        uses: actions/cache@v1
         with:
           path: ../Pylon
           key: ${{ runner.os }}-${{ matrix.os }}-PylonCache
@@ -215,7 +215,7 @@ jobs:
     steps:
       - name: Cache Qt
         id: cache-qt
-        uses: actions/cache@v2
+        uses: actions/cache@v1
         with:
           path: ../Qt
           key: ${{ runner.os }}-QtCache
@@ -226,7 +226,7 @@ jobs:
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Cache Pylon
         id: cache-pylon
-        uses: actions/cache@v2
+        uses: actions/cache@v1
         with:
           path: ../Pylon
           key: ${{ runner.os }}-QtCache
@@ -241,7 +241,6 @@ jobs:
       - name: Extract Pylon
         if: steps.cache-pylon.outputs.cache-hit != 'true'
         run: |
-          ls
           tar zxpf ../Pylon/pylon.tar.gz -C ../Pylon
           ln -s . ../Pylon/MacOS/Headers/pylon
       - uses: actions/checkout@v1
