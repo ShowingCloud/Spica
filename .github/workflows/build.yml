@@ -94,8 +94,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            %homepath%/Spica/Qt
-            %homepath%/Spica/Pylon
+            %homepath%/Qt
+            %homepath%/Pylon
           key: ${{ runner.os }}-${{ matrix.qt_ver }}-${{ matrix.qt_arch }}-QtCache
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -128,7 +128,7 @@ jobs:
         env:
           vc_arch: ${{ matrix.msvc_arch }}
         run: |
-          dir %homepath%
+          dir ${{ github.workspace }}
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
           qmake
           nmake
