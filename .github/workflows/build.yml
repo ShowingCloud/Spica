@@ -97,6 +97,7 @@ jobs:
           version: ${{ matrix.qt_ver }}
           target: ${{ matrix.qt_target }}
           arch: ${{ matrix.qt_arch }}
+          modules: qserialport
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
         if: steps.cache-qt.outputs.cache-hit != 'true'
@@ -172,6 +173,7 @@ jobs:
         uses: jurplel/install-qt-action@v2
         with:
           version: ${{ matrix.qt_ver }}
+          modules: qserialport
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
         if: steps.cache-qt.outputs.cache-hit != 'true'
@@ -223,6 +225,7 @@ jobs:
         uses: jurplel/install-qt-action@v2
         with:
           version: ${{ matrix.qt_ver }}
+          modules: qserialport
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: Get Pylon SDK
         if: steps.cache-qt.outputs.cache-hit != 'true'
