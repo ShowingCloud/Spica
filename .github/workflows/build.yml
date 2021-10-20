@@ -42,6 +42,8 @@ jobs:
         qt_arch: [win64_msvc2019_64, win32_msvc2019, win64_msvc2017_64, win32_msvc2017]
         exclude: 
           - qt_ver: 6.2.0
+            qt_arch: win64_msvc2019
+          - qt_ver: 6.2.0
             qt_arch: win64_msvc2017_64
           - qt_ver: 6.2.0
             qt_arch: win32_msvc2017
@@ -167,6 +169,9 @@ jobs:
       matrix:
         qt_ver: [5.12.11, 5.15.2, 6.2.0]
         os: [ubuntu-18.04, ubuntu-20.04]
+        exclude: 
+          - qt_ver: 6.2.0
+            os: ubuntu-18.04
         include:
           - qt_ver: 6.2.0
             qt_module: "qtserialport qtserialbus"
