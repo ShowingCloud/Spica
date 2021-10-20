@@ -89,7 +89,7 @@ jobs:
           - qt_ver: 5.15.2
             qt_module: ""
     steps:
-      - name: Cache Qt
+      - name: Cache Qt and Pylon
         id: cache-qt
         uses: actions/cache@v2
         with:
@@ -128,7 +128,6 @@ jobs:
         env:
           vc_arch: ${{ matrix.msvc_arch }}
         run: |
-          dir ~/Spica
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
           qmake
           nmake
@@ -176,7 +175,7 @@ jobs:
           - qt_ver: 5.15.2
             qt_module: ""
     steps:
-      - name: Cache Qt
+      - name: Cache Qt and Pylon
         id: cache-qt
         uses: actions/cache@v2
         with:
@@ -208,7 +207,6 @@ jobs:
           fetch-depth: 1
       - name: Build
         run: |
-          ls ~/work/Spica
           qmake
           make
       - name: Upload Release Asset
@@ -237,7 +235,7 @@ jobs:
           - qt_ver: 5.15.2
             qt_module: ""
     steps:
-      - name: Cache Qt
+      - name: Cache Qt and Pylon
         id: cache-qt
         uses: actions/cache@v2
         with:
@@ -270,7 +268,6 @@ jobs:
           fetch-depth: 1
       - name : Build
         run: |
-          ls -l ~/work/Spica
           qmake
           make
           macdeployqt Spica.app -dmg
