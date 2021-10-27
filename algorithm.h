@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSharedMemory>
 #include <QRunnable>
+#include <QThreadPool>
 
 #include "pylon.h"
 
@@ -19,6 +20,7 @@ signals:
 
 private:
     QSharedMemory *memory;
+    QThreadPool *pool;
     pylon::CAM_POS position;
 };
 
