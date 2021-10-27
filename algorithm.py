@@ -20,8 +20,8 @@ class algorithm(QtCore.QObject):
     def readMem(self):
         self.memory.lock()
         QtCore.qDebug('%s' % QtCore.QCryptographicHash.hash(
-            QtCore.QByteArray(self.memory.constData().tobytes()
-            ), QtCore.QCryptographicHash.Md5).toHex())
+            QtCore.QByteArray(self.memory.constData().tobytes()).left(1920000),
+            QtCore.QCryptographicHash.Md5).toHex())
         self.memory.unlock()
         return QtCore.QByteArray("return success")
 

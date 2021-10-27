@@ -57,7 +57,7 @@ void sharedRunner::run()
     memcpy(memory->data(), camdata, static_cast<size_t>(camsize));
 
     qDebug() << "Wrote shared memory: " << memory->key() << QCryptographicHash::hash(
-                    QByteArray(static_cast<const char *>(memory->data()), camsize),
+                    QByteArray(static_cast<const char *>(memory->constData()), camsize),
                     QCryptographicHash::Md5).toHex();
 
     memory->unlock();
