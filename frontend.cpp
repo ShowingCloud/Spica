@@ -1,7 +1,7 @@
+#include <QFileInfo>
+
 #include "frontend.h"
 #include "database.h"
-
-#include <QFileInfo>
 
 const QString frontend::getRecentImages()
 {
