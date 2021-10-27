@@ -5,6 +5,7 @@
 #include <QSharedMemory>
 #include <QRunnable>
 #include <QThreadPool>
+#include <QLocalServer>
 
 #include "pylon.h"
 
@@ -21,6 +22,8 @@ signals:
 private:
     QSharedMemory *memory;
     QThreadPool *pool;
+    QLocalServer *server;
+    QLocalSocket *socket = nullptr;
     pylon::CAM_POS position;
 };
 

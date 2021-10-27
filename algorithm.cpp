@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QCryptographicHash>
 #include <QDateTime>
+#include <QLocalSocket>
 #include <iso646.h>
 
 #include "algorithm.h"
@@ -10,6 +11,19 @@ algorithm::algorithm(const pylon::CAM_POS pos, QObject *parent) : QObject(parent
     position = pos;
     memory = new QSharedMemory("algo_" + QString::number(position), this);
     pool = new QThreadPool(this);
+
+    server = new QLocalServer(this);
+    connect(server, &QLocalServer::newConnection, [=](){
+        socket = server->nextPendingConnection();
+        if (not socket->waitForConnected()) {
+            qDebug() << "Wait for connected timeout";
+            return;
+        }
+        connect(socket, &QLocalSocket::readyRead, [=](){
+            qDebug() << socket->readAll();
+        });
+    });
+    server->listen("algo-" + QString::number(position));
 }
 
 algorithm &operator<< (algorithm &algo, const pylon &cam)
@@ -26,9 +40,12 @@ algorithm &operator<< (algorithm &algo, const pylon &cam)
                 return algo;
             }
 
-    if (algo.pool->activeThreadCount() < 1) {
-        sharedRunner *run = new sharedRunner(algo.memory, cam.currentImage, cam.currentImageSize);
-        algo.pool->start(run);
+    if (algo.socket != nullptr && algo.socket->isOpen()) {
+        algo.socket->write("test data");
+        if (algo.pool->activeThreadCount() < 1) {
+            sharedRunner *run = new sharedRunner(algo.memory, cam.currentImage, cam.currentImageSize);
+            algo.pool->start(run);
+        }
     }
 
     return algo;
