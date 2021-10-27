@@ -1,3 +1,5 @@
+#include <iso646.h>
+
 #include "devplc.h"
 
 devPLC::devPLC(QObject *parent) : QObject(parent)

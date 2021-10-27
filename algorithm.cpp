@@ -1,5 +1,7 @@
 #include <QDebug>
 #include <QCryptographicHash>
+#include <QThreadPool>
+#include <iso646.h>
 
 #include "algorithm.h"
 
@@ -23,14 +25,21 @@ algorithm &operator<< (algorithm &algo, const pylon &cam)
                 return algo;
             }
 
-    algo.memory->lock();
-    memcpy(algo.memory->data(), cam.currentImage, static_cast<size_t>(cam.currentImageSize));
-
-    qDebug() << "Wrote shared memory: " << algo.memory->key() << QCryptographicHash::hash(
-                    QByteArray(static_cast<const char *>(algo.memory->data()), cam.currentImageSize),
-                    QCryptographicHash::Md5).toHex();
-
-    algo.memory->unlock();
+    sharedRunner *run = new sharedRunner(algo.memory, cam.currentImage, cam.currentImageSize);
+    QThreadPool::globalInstance()->start(run);
 
     return algo;
+}
+
+void sharedRunner::run()
+{
+    memory->lock();
+    memcpy(memory->data(), camdata, static_cast<size_t>(camsize));
+
+    qDebug() << "Wrote shared memory: " << memory->key() << QCryptographicHash::hash(
+                    QByteArray(static_cast<const char *>(memory->data()), camsize),
+                    QCryptographicHash::Md5).toHex();
+
+    memory->unlock();
+
 }

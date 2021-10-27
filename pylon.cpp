@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QDateTime>
 #include <QUuid>
+#include <iso646.h>
 
 #include "pylon.h"
 #include "database.h"
@@ -29,6 +30,7 @@ pylon::~pylon()
 {
     camera.DestroyDevice();
     qDebug() << "Destroyed" << this;
+    delete algo;
 }
 
 void pylon::initialize(QObject *parent)
@@ -61,7 +63,6 @@ void pylon::capture()
         currentImageWidth = static_cast<int>(result->GetWidth());
         currentImageHeight = static_cast<int>(result->GetHeight());
         qDebug() << currentImageSize << currentImageWidth << currentImageHeight;
-        *algo << *this;
         *algo << *this;
         /*
         QImage img(static_cast<const quint8 *>(result->GetBuffer()),

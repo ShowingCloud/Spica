@@ -1,5 +1,6 @@
 #include <iso646.h>
 #include <QDebug>
+#include <iso646.h>
 
 #include "database.h"
 

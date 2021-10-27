@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QSharedMemory>
+#include <QRunnable>
 
 #include "pylon.h"
 
@@ -19,6 +20,20 @@ signals:
 private:
     QSharedMemory *memory;
     pylon::CAM_POS position;
+};
+
+class sharedRunner : public QRunnable
+{
+public:
+    explicit sharedRunner(QSharedMemory *memory, const quint8 *camdata, const int camsize)
+        : memory(memory), camdata(camdata), camsize(camsize) {}
+
+private:
+    QSharedMemory *memory;
+    const quint8 *camdata;
+    const int camsize;
+
+    void run() override;
 };
 
 #endif // ALGORITHM_H

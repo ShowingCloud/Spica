@@ -1,4 +1,5 @@
 #include <QFileInfo>
+#include <iso646.h>
 
 #include "frontend.h"
 #include "database.h"
