@@ -38,7 +38,7 @@ algorithm::algorithm(const pylon::CAM_POS pos, QObject *parent) : QObject(parent
 
 algorithm &operator<< (algorithm &algo, const pylon &cam)
 {
-    if (algo.memory->isAttached() and algo.memory->size() != cam.currentImageSize) {
+    if (algo.memory->isAttached() and algo.memory->size() < cam.currentImageSize) {
         delete algo.memory;
         algo.memory = new QSharedMemory("algo_" + QString::number(algo.position), &algo);
     }
