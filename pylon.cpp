@@ -20,7 +20,7 @@ pylon::pylon(const Pylon::CDeviceInfo dev, QObject *parent)
     algo = new algorithm(position);
 
     QTimer *captureTimer = new QTimer(this);
-    QObject::connect(captureTimer, &QTimer::timeout, [&]() {
+    QObject::connect(captureTimer, &QTimer::timeout, [=]() {
         capture();
     });
     captureTimer->start(1000);
