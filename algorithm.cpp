@@ -16,11 +16,16 @@ algorithm::algorithm(const pylon::CAM_POS pos, QObject *parent) : QObject(parent
     connect(server, &QLocalServer::newConnection, [=](){
         socket = server->nextPendingConnection();
         if (not socket->waitForConnected()) {
-            qDebug() << "Wait for connected timeout";
+            qDebug() << "Socket wait-for-connected timeout";
             return;
         }
+
         connect(socket, &QLocalSocket::readyRead, [=](){
             qDebug() << socket->readAll();
+        });
+        connect(socket, &QLocalSocket::disconnected, [=](){
+            socket->deleteLater();
+            socket = nullptr;
         });
     });
     server->listen("algo-" + QString::number(position));
@@ -42,7 +47,7 @@ algorithm &operator<< (algorithm &algo, const pylon &cam)
 
     if (algo.socket != nullptr && algo.socket->isOpen()) {
         algo.socket->write("test data");
-        if (algo.pool->activeThreadCount() < 1) {
+        if (algo.pool->activeThreadCount() == 0) {
             sharedRunner *run = new sharedRunner(algo.memory, cam.currentImage, cam.currentImageSize);
             algo.pool->start(run);
         }
