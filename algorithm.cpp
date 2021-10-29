@@ -74,7 +74,9 @@ algorithm &operator<< (algorithm &algo, const pylon &cam)
                 packet["height"] = cam.currentImageHeight;
                 packet["width"] = cam.currentImageWidth;
                 packet["filename"] = cam.currentFilename;
-                emit algo.writeSocket(QJsonDocument(packet).toJson());
+
+                if (algo.socket != nullptr && algo.socket->isOpen())
+                    emit algo.writeSocket(QJsonDocument(packet).toJson());
             }));
         }
     }

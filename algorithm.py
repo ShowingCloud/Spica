@@ -24,8 +24,8 @@ class algorithm(QtCore.QObject):
             lambda: self.memory.isAttached()
                 or self.memory.attach(QtCore.QSharedMemory.ReadOnly)
                 or print('QSharedMemory: ', self.memory.error(), self.memory.errorString()))
-        timer.start(1000)
         QtCore.QTimer.singleShot(0, timer.timeout)
+        timer.start(1000)
 
     def readMem(self, params):
         if (not self.memory.isAttached()):
