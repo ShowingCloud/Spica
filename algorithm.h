@@ -29,4 +29,17 @@ private:
     pylon::CAM_POS position;
 };
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+class FunctionRunnable : public QRunnable
+{
+    std::function<void()> m_functionToRun;
+
+public:
+    FunctionRunnable(std::function<void()> functionToRun) : m_functionToRun(std::move(functionToRun)) {}
+    inline void run() override {
+        m_functionToRun();
+    }
+};
+#endif
+
 #endif // ALGORITHM_H

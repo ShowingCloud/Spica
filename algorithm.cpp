@@ -54,7 +54,11 @@ algorithm &operator<< (algorithm &algo, const pylon &cam)
 
     if (algo.socket != nullptr && algo.socket->isOpen()) {
         if (algo.pool->activeThreadCount() == 0) {
-            algo.pool->start([&](){
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+            algo.pool->start(new FunctionRunnable([&](){
+#else
+            algo.pool->start(([&](){
+#endif
                 algo.memory->lock();
                 memcpy(algo.memory->data(), cam.currentImage, static_cast<size_t>(cam.currentImageSize));
 
@@ -71,7 +75,7 @@ algorithm &operator<< (algorithm &algo, const pylon &cam)
                 packet["width"] = cam.currentImageWidth;
                 packet["filename"] = cam.currentFilename;
                 emit algo.writeSocket(QJsonDocument(packet).toJson());
-            });
+            }));
         }
     }
 
