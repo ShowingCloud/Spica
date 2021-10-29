@@ -52,7 +52,7 @@ void devPLC::readData()
     if (!reply) {
         qDebug() << "Read error: " << this->dev->errorString();
     } else {
-        if (!reply->isFinished())
+        if (not reply->isFinished())
             connect(reply, &QModbusReply::finished, [=]() {
                 if (!reply)
                     return;
@@ -97,7 +97,7 @@ void devPLC::readState()
     if (!reply) {
         qDebug() << "Read state error: " << this->dev->errorString();
     } else {
-        if (!reply->isFinished())
+        if (not reply->isFinished())
             connect(reply, &QModbusReply::finished, [=]() {
                 if (!reply)
                     return;
@@ -137,7 +137,7 @@ void devPLC::writeData()
     if (!reply) {
         qDebug() << "Write error: " << this->dev->errorString();
     } else {
-        if (!reply->isFinished()) {
+        if (not reply->isFinished()) {
             connect(reply, &QModbusReply::finished, [=]() {
                 if (reply->error() == QModbusDevice::ProtocolError) {
                     qDebug() << "Write data error protocol: " << reply->errorString() << reply->rawResult().exceptionCode();
@@ -149,7 +149,7 @@ void devPLC::writeData()
                 reply->deleteLater();
             });
         } else {
-            reply->deleteLater();
+            delete reply;
         }
     }
 }
@@ -180,7 +180,7 @@ void devPLC::writeState()
     if (!reply) {
         qDebug() << "Write error: " << this->dev->errorString();
     } else {
-        if (!reply->isFinished()) {
+        if (not reply->isFinished()) {
             connect(reply, &QModbusReply::finished, [=]() {
                 if (reply->error() == QModbusDevice::ProtocolError) {
                     qDebug() << "Write state protocol error: " << reply->errorString() << reply->rawResult().exceptionCode();
@@ -192,7 +192,7 @@ void devPLC::writeState()
                 reply->deleteLater();
             });
         } else {
-            reply->deleteLater();
+            delete reply;
         }
     }
 }

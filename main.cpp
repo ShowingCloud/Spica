@@ -64,6 +64,6 @@ int main(int argc, char *argv[])
     pylon::destroy();
     plc.deleteLater();
     plcserver.deleteLater();
-    globalDB->deleteLater();
+    delete globalDB;
     return ret;
 }
