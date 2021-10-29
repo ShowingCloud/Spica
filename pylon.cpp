@@ -62,7 +62,9 @@ void pylon::capture()
         currentImageSize = static_cast<int>(result->GetBufferSize());
         currentImageWidth = static_cast<int>(result->GetWidth());
         currentImageHeight = static_cast<int>(result->GetHeight());
-        qDebug() << currentImageSize << currentImageWidth << currentImageHeight;
+        currentFilename = savePath + "/" + QDateTime::currentDateTime().toString(Qt::ISODate) + "-"
+                                        + QUuid::createUuid().toString(QUuid::Id128) + ".png";
+        qDebug() << currentImageSize << currentImageWidth << currentImageHeight << currentFilename;
         *algo << *this;
         /*
         QImage img(static_cast<const quint8 *>(result->GetBuffer()),
@@ -71,8 +73,6 @@ void pylon::capture()
                    QImage::Format_RGB888);
         */
 
-        currentFilename = savePath + "/" + QDateTime::currentDateTime().toString(Qt::ISODate) + "-"
-                                        + QUuid::createUuid().toString(QUuid::Id128) + ".png";
         Pylon::CImagePersistence::Save(Pylon::EImageFileFormat::ImageFileFormat_Png,
                                        currentFilename.replace(":", "-").toStdString().c_str(), result);
         *globalDB << *this;

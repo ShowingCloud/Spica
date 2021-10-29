@@ -12,13 +12,25 @@ class algorithm(QtCore.QObject):
             print('QSharedMemory: ', self.memory.error(), self.memory.errorString())
 
         self.socket = QtNetwork.QLocalSocket(self)
-        self.socket.connected.connect(
-            lambda: self.socket.readyRead.connect(self.gotFrame))
+        self.socket.readyRead.connect(self.gotFrame)
         self.socket.errorOccurred.connect(
             lambda err: print('QLocalSocket Error Occurred: ', err))
-        self.socket.connectToServer("algo-1", QtCore.QIODevice.ReadWrite)
+
+        timer = QtCore.QTimer(self)
+        timer.timeout.connect(
+            lambda: self.socket.state() == QtNetwork.QLocalSocket.ConnectedState
+                or self.socket.connectToServer("algo-1", QtCore.QIODevice.ReadWrite))
+        timer.timeout.connect(
+            lambda: self.memory.isAttached()
+                or self.memory.attach(QtCore.QSharedMemory.ReadOnly)
+                or print('QSharedMemory: ', self.memory.error(), self.memory.errorString()))
+        timer.start(1000)
+        QtCore.QTimer.singleShot(0, timer.timeout)
 
     def readMem(self, params):
+        if (not self.memory.isAttached()):
+            return QtCore.QByteArray("")
+
         self.memory.lock()
         QtCore.qDebug('%s' % QtCore.QCryptographicHash.hash(
             QtCore.QByteArray(self.memory.constData().tobytes()).left(params["size"]),
@@ -28,7 +40,7 @@ class algorithm(QtCore.QObject):
         return QtCore.QByteArray(json.dumps({
             "id": params["id"],
             "size": params["size"]
-            }))
+        }))
 
     def gotFrame(self):
         req = self.socket.readAll()

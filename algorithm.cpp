@@ -54,6 +54,9 @@ algorithm &operator<< (algorithm &algo, const pylon &cam)
         QJsonObject packet;
         packet["id"] = 0;
         packet["size"] = cam.currentImageSize;
+        packet["height"] = cam.currentImageHeight;
+        packet["width"] = cam.currentImageWidth;
+        packet["filename"] = cam.currentFilename;
         algo.socket->write(QJsonDocument(packet).toJson());
 
         if (algo.pool->activeThreadCount() == 0) {
