@@ -1,6 +1,6 @@
 # This Python file uses the following encoding: utf-8
 from PySide6 import QtCore, QtNetwork, QtWidgets
-import sys, json
+import sys, json, signal
 
 
 class algorithm(QtCore.QObject):
@@ -50,4 +50,5 @@ class algorithm(QtCore.QObject):
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     algo = algorithm()
+    signal.signal(signal.SIGINT, lambda signum, frame: app.exit())
     sys.exit(app.exec())
