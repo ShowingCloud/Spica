@@ -51,31 +51,27 @@ algorithm &operator<< (algorithm &algo, const pylon &cam)
             }
 
     if (algo.socket != nullptr && algo.socket->isOpen()) {
-        QJsonObject packet;
-        packet["id"] = 0;
-        packet["size"] = cam.currentImageSize;
-        packet["height"] = cam.currentImageHeight;
-        packet["width"] = cam.currentImageWidth;
-        packet["filename"] = cam.currentFilename;
-        algo.socket->write(QJsonDocument(packet).toJson());
-
         if (algo.pool->activeThreadCount() == 0) {
-            sharedRunner *run = new sharedRunner(algo.memory, cam.currentImage, cam.currentImageSize);
-            algo.pool->start(run);
+            algo.pool->start([&](){
+                algo.memory->lock();
+                memcpy(algo.memory->data(), cam.currentImage, static_cast<size_t>(cam.currentImageSize));
+
+                qWarning() << "Wrote shared algo.memory: " << algo.memory->key() << QCryptographicHash::hash(
+                                  QByteArray(static_cast<const char *>(algo.memory->constData()), cam.currentImageSize),
+                                  QCryptographicHash::Md5).toHex();
+
+                algo.memory->unlock();
+            });
+
+            QJsonObject packet;
+            packet["id"] = 0;
+            packet["size"] = cam.currentImageSize;
+            packet["height"] = cam.currentImageHeight;
+            packet["width"] = cam.currentImageWidth;
+            packet["filename"] = cam.currentFilename;
+            algo.socket->write(QJsonDocument(packet).toJson());
         }
     }
 
     return algo;
-}
-
-void sharedRunner::run()
-{
-    memory->lock();
-    memcpy(memory->data(), camdata, static_cast<size_t>(camsize));
-
-    qWarning() << "Wrote shared memory: " << memory->key() << QCryptographicHash::hash(
-                    QByteArray(static_cast<const char *>(memory->constData()), camsize),
-                    QCryptographicHash::Md5).toHex();
-
-    memory->unlock();
 }
