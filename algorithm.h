@@ -18,6 +18,9 @@ public:
 
     friend algorithm &operator<< (algorithm &algo, const pylon &cam);
 
+signals:
+    void writeSocket(const QByteArray &data);
+
 private:
     QSharedMemory *memory;
     QThreadPool *pool;

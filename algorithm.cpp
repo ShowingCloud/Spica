@@ -34,6 +34,8 @@ algorithm::algorithm(const pylon::CAM_POS pos, QObject *parent) : QObject(parent
     QLocalServer::removeServer("algo-" + QString::number(position));
     if (not server->listen("algo-" + QString::number(position)))
         qDebug() << "Error listening: " << server->errorString();
+
+    connect(this, &algorithm::writeSocket, this, [&](const QByteArray &data){ socket->write(data); });
 }
 
 algorithm &operator<< (algorithm &algo, const pylon &cam)
@@ -61,15 +63,15 @@ algorithm &operator<< (algorithm &algo, const pylon &cam)
                                   QCryptographicHash::Md5).toHex();
 
                 algo.memory->unlock();
-            });
 
-            QJsonObject packet;
-            packet["id"] = 0;
-            packet["size"] = cam.currentImageSize;
-            packet["height"] = cam.currentImageHeight;
-            packet["width"] = cam.currentImageWidth;
-            packet["filename"] = cam.currentFilename;
-            algo.socket->write(QJsonDocument(packet).toJson());
+                QJsonObject packet;
+                packet["id"] = 0;
+                packet["size"] = cam.currentImageSize;
+                packet["height"] = cam.currentImageHeight;
+                packet["width"] = cam.currentImageWidth;
+                packet["filename"] = cam.currentFilename;
+                emit algo.writeSocket(QJsonDocument(packet).toJson());
+            });
         }
     }
 
