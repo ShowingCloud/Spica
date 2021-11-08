@@ -35,7 +35,8 @@ class FunctionRunnable : public QRunnable
     std::function<void()> m_functionToRun;
 
 public:
-    FunctionRunnable(std::function<void()> functionToRun) : m_functionToRun(std::move(functionToRun)) {}
+    FunctionRunnable(std::function<void()> functionToRun)
+        : m_functionToRun(std::move(functionToRun)) {}
     inline void run() override {
         m_functionToRun();
     }
