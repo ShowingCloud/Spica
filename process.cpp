@@ -22,7 +22,7 @@ void process::startProcessing(devPLC *dev, QObject *parent)
     stateTimer->start(0);
 }
 
-
+#ifdef QT_DEBUG
 void process::startServer(devPLCServer *dev, QObject *parent)
 {
     QTimer *timer = new QTimer();
@@ -31,6 +31,7 @@ void process::startServer(devPLCServer *dev, QObject *parent)
     });
     timer->start(0);
 }
+#endif
 
 void process::processing()
 {

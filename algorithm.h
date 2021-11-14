@@ -6,6 +6,7 @@
 #include <QRunnable>
 #include <QThreadPool>
 #include <QLocalServer>
+#include <iso646.h>
 
 #include "pylon.h"
 

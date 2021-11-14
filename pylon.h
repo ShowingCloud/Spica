@@ -7,6 +7,7 @@
 #endif
 
 #include <QObject>
+#include <iso646.h>
 
 #include "devplc.h"
 

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include <iso646.h>
 
 #include "devplc.h"
 #include "pylon.h"

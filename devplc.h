@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QModbusTcpClient>
+#include <iso646.h>
 #include <QDebug>
 
 class pylon;

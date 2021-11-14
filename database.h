@@ -7,6 +7,7 @@
 #include <QSqlDatabase>
 #include <QSqlRecord>
 #include <QSqlError>
+#include <iso646.h>
 
 class pylon;
 class algorithm;
