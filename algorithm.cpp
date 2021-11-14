@@ -7,8 +7,9 @@
 #include <iso646.h>
 
 #include "algorithm.h"
+#include "database.h"
 
-algorithm::algorithm(const pylon::CAM_POS pos, QObject *parent) : QObject(parent)
+algorithm::algorithm(const pylon::CAM_POS pos, const pylon *cam, QObject *parent) : QObject(parent)
 {
     position = pos;
     memory = new QSharedMemory("algo_" + QString::number(position), this);
@@ -28,6 +29,12 @@ algorithm::algorithm(const pylon::CAM_POS pos, QObject *parent) : QObject(parent
         });
         connect(socket, &QLocalSocket::readyRead, [=](){
             QJsonDocument resp = QJsonDocument::fromJson(socket->readAll());
+            imgId = resp["id"].toInt();
+            resultJSON = resp.toJson();
+            result = {1, 1, 1};
+            *globalDB << *this << this->algoId;
+
+            emit cam->gotAlgo(imgId, this->algoId, result);
             qDebug() << "Got response: " << resp;
         });
     });
@@ -69,17 +76,32 @@ algorithm &operator<< (algorithm &algo, const pylon &cam)
                 algo.memory->unlock();
 
                 QJsonObject packet;
-                packet["id"] = 0;
+                packet["id"] = cam.imgId;
                 packet["size"] = cam.currentImageSize;
                 packet["height"] = cam.currentImageHeight;
                 packet["width"] = cam.currentImageWidth;
                 packet["filename"] = cam.currentFilename;
 
-                if (algo.socket != nullptr && algo.socket->isOpen())
+                if (algo.socket && algo.socket->isOpen())
                     emit algo.writeSocket(QJsonDocument(packet).toJson());
             }));
         }
     }
 
     return algo;
+}
+
+database &operator<< (database &db, const algorithm &algo)
+{
+    db.dbModel->setTable(db.DB_TABLES[db.DB_TBL_ALGO]);
+    QSqlRecord r = db.dbModel->record();
+    r.setValue("ImgID", algo.imgId);
+    r.setValue("ResultJSON", algo.resultJSON);
+    for (int i = 0; i < 3; ++i)
+        r.setValue("Result" + QString::number(i + 1), algo.result[i]);
+    r.setValue("Time", QDateTime::currentDateTime());
+    if (!db.dbModel->insertRecord(-1, r))
+        qDebug() << db.dbModel->lastError();
+
+    return db;
 }

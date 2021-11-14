@@ -20,6 +20,12 @@ database::database(QObject *parent) : QObject(parent)
     dbQuery = QSqlQuery(db);
 
     createTable();
+
+    connect(dbModel, &QSqlTableModel::primeInsert, [=](int row, QSqlRecord &record) {
+        Q_UNUSED(record)
+        lastId = row;
+        qDebug() << "Inserted with id: " << lastId;
+    });
 }
 
 database::~database()
@@ -79,4 +85,10 @@ const QStringList database::getRecentImages(const int  num) const
     }
 
     return ret;
+}
+
+const database &database::operator<< (int &lastId) const
+{
+    lastId = this->lastId;
+    return *this;
 }

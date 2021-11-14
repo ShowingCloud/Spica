@@ -18,6 +18,7 @@ SOURCES += \
         devplc.cpp \
         frontend.cpp \
         main.cpp \
+        process.cpp \
         pylon.cpp
 
 RESOURCES += qml.qrc
@@ -40,12 +41,13 @@ HEADERS += \
     database.h \
     devplc.h \
     frontend.h \
+    process.h \
     pylon.h
 
 CONFIG(release, debug|release) {
     DEFINES += QT_NO_WARNING_OUTPUT
 }
-DEFINES += QT_NO_INFO_OUTPUT
+#DEFINES += QT_NO_INFO_OUTPUT
 
 unix:!macx {
     CONFIG(debug, debug|release) {

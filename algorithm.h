@@ -14,8 +14,9 @@ class algorithm : public QObject
     Q_OBJECT
 
 public:
-    explicit algorithm(const pylon::CAM_POS pos, QObject *parent = nullptr);
+    explicit algorithm(const pylon::CAM_POS pos, const pylon *cam, QObject *parent = nullptr);
 
+    friend database &operator<< (database &db, const algorithm &algo);
     friend algorithm &operator<< (algorithm &algo, const pylon &cam);
 
 signals:
@@ -27,6 +28,10 @@ private:
     QLocalServer *server;
     QLocalSocket *socket = nullptr;
     pylon::CAM_POS position;
+    int imgId;
+    int algoId;
+    QString resultJSON;
+    QVector<int> result;
 };
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)

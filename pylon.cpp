@@ -16,14 +16,7 @@ pylon::pylon(const Pylon::CDeviceInfo dev, QObject *parent)
     qDebug() << "Using device: " << camera.GetDeviceInfo().GetModelName();
     camera.MaxNumBuffer = 100;
 
-    position = CAM_POS_1;
-    algo = new algorithm(position);
-
-    QTimer *captureTimer = new QTimer(this);
-    QObject::connect(captureTimer, &QTimer::timeout, [=]() {
-        capture();
-    });
-    captureTimer->start(1000);
+    algo = new algorithm(position, this, parent);
 }
 
 pylon::~pylon()
@@ -43,6 +36,11 @@ void pylon::initialize(QObject *parent)
         for (const Pylon::CDeviceInfo &dev : qAsConst(pylonList)) {
             pylon *p = new pylon(dev, parent);
             devList << p;
+
+            p->position = idPosition[0];
+            p->station = positionStation[p->position];
+            posDevList[p->position] = p;
+            //devPLC::addDeviceList(p->station, p);
         }
 }
 
@@ -53,7 +51,7 @@ void pylon::destroy()
     Pylon::PylonTerminate();
 }
 
-void pylon::capture()
+int pylon::capture()
 {
     camera.GrabOne(5000, result);
 
@@ -65,7 +63,6 @@ void pylon::capture()
         currentFilename = savePath + "/" + QDateTime::currentDateTime().toString(Qt::ISODate) + "-"
                                         + QUuid::createUuid().toString(QUuid::Id128) + ".png";
         qDebug() << currentImageSize << currentImageWidth << currentImageHeight << currentFilename;
-        *algo << *this;
         /*
         QImage img(static_cast<const quint8 *>(result->GetBuffer()),
                    static_cast<int>(result->GetWidth()),
@@ -75,11 +72,15 @@ void pylon::capture()
 
         Pylon::CImagePersistence::Save(Pylon::EImageFileFormat::ImageFileFormat_Png,
                                        currentFilename.replace(":", "-").toStdString().c_str(), result);
-        *globalDB << *this;
+        *globalDB << *this << this->imgId;
 
-    } else
+        *algo << *this;
+        return this->imgId;
+    } else {
         qDebug() << "Error: " << QString::number(result->GetErrorCode(), 16) << " " <<
                     result->GetErrorDescription();
+        return -1;
+    }
 }
 
 database &operator<< (database &db, const pylon &py)
@@ -87,7 +88,7 @@ database &operator<< (database &db, const pylon &py)
     db.dbModel->setTable(db.DB_TABLES[db.DB_TBL_IMG]);
     QSqlRecord r = db.dbModel->record();
     r.setValue("CamID", 0);
-    r.setValue("StepID", py.position);
+    r.setValue("Position", py.position);
     r.setValue("Time", QDateTime::currentDateTime());
     r.setValue("Filename", py.currentFilename);
     if (!db.dbModel->insertRecord(-1, r))

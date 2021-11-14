@@ -7,6 +7,7 @@
 #include "pylon.h"
 #include "database.h"
 #include "frontend.h"
+#include "process.h"
 
 database *globalDB;
 
@@ -32,7 +33,11 @@ int main(int argc, char *argv[])
     globalDB = new database();
     pylon::initialize(&app);
     devPLC plc(&app);
+    process::startProcessing(&plc, &app);
+#ifdef QT_DEBUG
     devPLCServer plcserver(&app);
+    process::startServer(&plcserver, &app);
+#endif
 
     qmlRegisterSingletonType<devPLC>("spica.devplc", 1, 0, "DevPLC", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
