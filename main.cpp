@@ -68,7 +68,9 @@ int main(int argc, char *argv[])
     int ret = app.exec();
     pylon::destroy();
     plc.deleteLater();
+#ifdef QT_DEBUG
     plcserver.deleteLater();
+#endif
     delete globalDB;
     return ret;
 }

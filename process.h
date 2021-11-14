@@ -93,7 +93,9 @@ public:
     }
 
     static void startProcessing(devPLC *dev, QObject *parent = nullptr);
+#ifdef QT_DEBUG
     static void startServer(devPLCServer *dev, QObject *parent = nullptr);
+#endif
     void processing();
 
 signals:

@@ -47,7 +47,7 @@ HEADERS += \
 CONFIG(release, debug|release) {
     DEFINES += QT_NO_WARNING_OUTPUT
 }
-#DEFINES += QT_NO_INFO_OUTPUT
+DEFINES += QT_NO_INFO_OUTPUT
 
 unix:!macx {
     CONFIG(debug, debug|release) {
