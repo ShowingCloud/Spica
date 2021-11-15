@@ -22,7 +22,7 @@ devPLC::devPLC(QObject *parent) : QObject(parent)
         timer->start(1000);
 
         if (dev->state() != QModbusDevice::ConnectedState)
-            qInfo() << "Connecting: " << dev->connectDevice();
+            qDebug() << "Connecting: " << dev->connectDevice();
     });
     timer->start(0);
 }
@@ -132,19 +132,6 @@ bool devPLC::writeData(const int start, const QVector<quint16> value, const std:
         }
     }
 }
-
-#ifdef QT_DEBUG
-void devPLC::writeReadData()
-{
-    if (dev->state() != QModbusDevice::ConnectedState)
-        return;
-
-    QModbusReply *reply = dev->sendWriteRequest(
-                QModbusDataUnit(QModbusDataUnit::HoldingRegisters, startRead, readValueAllOne),
-                serverAddr);
-    reply->deleteLater();
-}
-#endif
 
 #ifdef QT_DEBUG
 

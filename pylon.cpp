@@ -33,14 +33,24 @@ void pylon::initialize(QObject *parent)
     Pylon::PylonInitialize();
     Pylon::DeviceInfoList pylonList;
     if (Pylon::CTlFactory::GetInstance().EnumerateDevices(pylonList) != 0)
+#ifdef QT_DEBUG
+        for (int i = 0; i < 8; ++i) {
+            Pylon::CDeviceInfo dev = pylonList[0];
+#else
         for (const Pylon::CDeviceInfo &dev : qAsConst(pylonList)) {
+#endif
             pylon *p = new pylon(dev, parent);
             devList << p;
 
+#ifdef QT_DEBUG
+            p->position = idPosition[i];
+#else
             p->position = idPosition[0];
+#endif
             p->station = positionStation[p->position];
             posDevList[p->position] = p;
             //devPLC::addDeviceList(p->station, p);
+            qDebug() << p << p->position << p->station;
         }
 }
 

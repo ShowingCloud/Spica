@@ -27,18 +27,30 @@ void process::startServer(devPLCServer *dev, QObject *parent)
 {
     QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [=]() {
-        timer->start(1000);
+        static int i = 0;
+        switch(i) {
+        case 0:
+            dev->dev->setData(QModbusDataUnit::HoldingRegisters, 100, 1);
+            break;
+        case 1:
+            break;
+        default:
+            qDebug() << i;
+            ++i;
+            break;
+        }
     });
-    timer->start(0);
+    timer->start(1000);
 }
 #endif
 
 void process::processing()
 {
     QTimer *prodTimer = new QTimer(this);
-    connect(prodTimer, &QTimer::timeout, [&]() {
+    connect(prodTimer, &QTimer::timeout, [=]() {
+        prodTimer->setInterval(500);
         int startAddr = dev->camProdAddr[devPLC::CAM_POS_B][0];
-        if (not dev->readData(startAddr, dev->prodAddrLen, [&](QVector<quint16> resp) {
+        if (not dev->readData(startAddr, dev->prodAddrLen, [=](QVector<quint16> resp) {
             if (resp.length() != dev->prodAddrLen) {
                 prodTimer->start(500);
                 return;
@@ -60,9 +72,11 @@ void process::processing()
         }))
             prodTimer->start(500);
     });
+    prodTimer->start(0);
 
     QTimer *pneuTimer = new QTimer(this);
     connect(pneuTimer, &QTimer::timeout, [=]() {
+        pneuTimer->setInterval(500);
         if (not dev->readData(dev->pneuAddr[0], dev->pneuAddrLen, [=](QVector<quint16> resp) {
             if (resp.length() != dev->pneuAddrLen) {
                 pneuTimer->start(500);
@@ -84,7 +98,9 @@ void process::processing()
 
     QTimer *camReadyTimer = new QTimer(this);
     connect(camReadyTimer, &QTimer::timeout, [=]() {
-        if (not dev->readData(dev->camReadAddr[devPLC::CAM_POS_B], dev->camReadAddrLen, [&](QVector<quint16> resp) {
+        camReadyTimer->setInterval(500);
+        int startAddr = dev->camReadAddr[devPLC::CAM_POS_B];
+        if (not dev->readData(startAddr, dev->camReadAddrLen, [=](QVector<quint16> resp) {
             if (resp.length() != dev->camReadAddrLen) {
                 camReadyTimer->start(500);
                 return;
@@ -92,7 +108,7 @@ void process::processing()
 
             for (const devPLC::CAM_POS campos : devPLC::camposList) {
                 if (not camReady[campos]) {
-                    if (resp[dev->camReadAddr[campos]] == 1) {
+                    if (resp[dev->camReadAddr[campos] - startAddr] == 1) {
                         for (const pylon::CAM_POS pos : pylon::positionStation.keys(campos)) {
                             imgId[pos] = pylon::posDevList[pos]->capture(); // TODO: might get -1
 
@@ -133,6 +149,7 @@ void process::processing()
 
     QTimer *waitTimer = new QTimer(this);
     connect(waitTimer, &QTimer::timeout, [=]() {
+        waitTimer->setInterval(500);
         if (not gotProd) {
             waitTimer->start(500);
             return;

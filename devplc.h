@@ -75,13 +75,8 @@ private:
     inline static const QVector<int> pneuAddr = { 34, 39, 44 };
     inline static const quint16 pneuAddrLen = 11;
     inline static const QVector<int> pneuProdAddr = { 8, 18, 28 };
-    inline static const quint16 prodAddrLen = 22;
-
-#ifdef QT_DEBUG
-    const QVector<quint16> readValueAllOne = QVector<quint16>(lenRead, 1);
-#endif
+    inline static const quint16 prodAddrLen = 27;
 };
-
 
 #ifdef QT_DEBUG
 #include <QModbusTcpServer>
@@ -93,6 +88,8 @@ class devPLCServer : public QObject
 public:
     explicit devPLCServer(QObject *parent = nullptr);
     ~devPLCServer() override;
+
+    friend class process;
 
 private:
     QModbusTcpServer *dev = nullptr;
