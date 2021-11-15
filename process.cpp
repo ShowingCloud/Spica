@@ -70,13 +70,15 @@ void process::processing()
 
             for (int i = 0; i < 3; ++i) {
                 pneuProdId[i] = resp[dev->pneuProdAddr[i] - startAddr];
-                pneuProd[i] = product::findOrCreate(pneuProdId[i], this);
+                pneuProd[i] = product::findOrCreate(
+                                  pneuProdId[i], static_cast<product::POS_LCR>(i), this);
             }
 
             for (const devPLC::CAM_POS campos : devPLC::camposList)
                 for (int i = 0; i < 3; ++i) {
                     camProdId[i][campos] = resp[dev->camProdAddr[campos][i] - startAddr];
-                    camProd[i][campos] = product::findOrCreate(camProdId[i][campos], this);
+                    camProd[i][campos] = product::findOrCreate(
+                                  camProdId[i][campos], static_cast<product::POS_LCR>(i), this);
                 }
 
             gotProd = true;
@@ -218,6 +220,7 @@ database &operator<< (database &db, const product &prod)
     r.setValue("ProdID", prod.prodId);
     r.setValue("PneuResult", prod.pneuResult);
     r.setValue("Time", QDateTime::currentDateTime());
+    r.setValue("LCR", prod.lcr);
     for (const pylon::CAM_POS campos : pylon::camposList) {
         r.setValue("Cam" + QString::number(campos) + "Img", prod.imgId[campos]);
         r.setValue("Cam" + QString::number(campos) + "Algo", prod.algoId[campos]);

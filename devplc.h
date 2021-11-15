@@ -20,10 +20,6 @@ public:
     enum CAM_POS { CAM_POS_B, CAM_POS_C, CAM_POS_D, CAM_POS_OTHERS };
     inline static const QVector<CAM_POS> camposList = { CAM_POS_B, CAM_POS_C, CAM_POS_D };
 
-    inline static void addDeviceList (CAM_POS station, pylon *device) {
-        devList[station] << device;
-    }
-
     friend class process;
 
 private:

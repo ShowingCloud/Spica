@@ -47,7 +47,6 @@ void pylon::initialize(QObject *parent)
 #endif
             p->station = positionStation[p->position];
             posDevList[p->position] = p;
-            //devPLC::addDeviceList(p->station, p);
             p->algo = new algorithm(p->position, p, parent);
             qDebug() << p << p->position << p->station;
         }

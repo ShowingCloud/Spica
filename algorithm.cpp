@@ -32,7 +32,6 @@ algorithm::algorithm(const pylon::CAM_POS pos, const pylon *cam, QObject *parent
             imgId = resp["id"].toInt();
             resultJSON = resp.toJson();
             result = {1, 1, 1};
-            qDebug() << resultJSON;
             *globalDB << *this << this->algoId;
 
             emit cam->gotAlgo(imgId, this->algoId, result);

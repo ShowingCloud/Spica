@@ -64,7 +64,7 @@ private:
                        {"Cam6Img", "INTEGER"}, {"Cam6Algo", "INTEGER"}, {"Cam6Result", "INTEGER"},
                        {"Cam7Img", "INTEGER"}, {"Cam7Algo", "INTEGER"}, {"Cam7Result", "INTEGER"},
                        {"Cam8Img", "INTEGER"}, {"Cam8Algo", "INTEGER"}, {"Cam8Result", "INTEGER"},
-                       {"Result", "INTEGER"}}}};
+                       {"Result", "INTEGER"}, {"LCR", "INTEGER"}}}};
 
     inline static const QHash<DB_TBL, QStringList> DB_INDEXES = {
         {DB_TBL_IMG, {"CamID", "Position", "Time"}},

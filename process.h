@@ -14,7 +14,9 @@ class product : public QObject
     Q_OBJECT
 
 public:
-    explicit product(const int id, QObject *parent = nullptr) : QObject(parent), prodId(id) {
+    enum POS_LCR { POS_LEFT = 0, POS_CENTER, POS_RIGHT, POS_OTHERS };
+
+    explicit product(const int id, const POS_LCR lcr, QObject *parent = nullptr) : QObject(parent), prodId(id), lcr(lcr) {
         for (const pylon::CAM_POS campos : pylon::camposList)
             algoReady[campos] = false;
     }
@@ -28,10 +30,10 @@ public:
         return nullptr;
     }
 
-    inline static product *findOrCreate(const int id, QObject *parent = nullptr) {
+    inline static product *findOrCreate(const int id, const POS_LCR lcr, QObject *parent = nullptr) {
         product *ret = product::find(id);
         if (not ret) {
-            ret = new product(id, parent);
+            ret = new product(id, lcr, parent);
             productList << ret;
         }
         return ret;
@@ -78,6 +80,7 @@ private:
     bool pneuReady = false;
     int pneuResult;
     int result;
+    POS_LCR lcr;
 };
 
 class process : public QObject
