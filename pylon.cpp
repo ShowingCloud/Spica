@@ -15,8 +15,6 @@ pylon::pylon(const Pylon::CDeviceInfo dev, QObject *parent)
 {
     qDebug() << "Using device: " << camera.GetDeviceInfo().GetModelName();
     camera.MaxNumBuffer = 100;
-
-    algo = new algorithm(position, this, parent);
 }
 
 pylon::~pylon()
@@ -50,6 +48,7 @@ void pylon::initialize(QObject *parent)
             p->station = positionStation[p->position];
             posDevList[p->position] = p;
             //devPLC::addDeviceList(p->station, p);
+            p->algo = new algorithm(p->position, p, parent);
             qDebug() << p << p->position << p->station;
         }
 }

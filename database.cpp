@@ -21,9 +21,9 @@ database::database(QObject *parent) : QObject(parent)
 
     createTable();
 
-    connect(dbModel, &QSqlTableModel::primeInsert, [=](int row, QSqlRecord &record) {
-        Q_UNUSED(record)
-        lastId = row;
+    connect(dbModel, &QSqlTableModel::beforeInsert, [=](QSqlRecord &record) {
+        //qDebug() << record << dbModel->rowCount();
+        lastId = record.value("Id").toInt();
         qDebug() << "Inserted with id: " << lastId;
     });
 }

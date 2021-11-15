@@ -28,17 +28,29 @@ void process::startServer(devPLCServer *dev, QObject *parent)
     QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [=]() {
         static int i = 0;
+        QHash<int, int> data;
         switch(i) {
         case 0:
-            dev->dev->setData(QModbusDataUnit::HoldingRegisters, 100, 1);
+            data = {{100, 1}, {2, 5}, {4, 6}, {6, 7}, {8, 9}, {10, 11}, {12, 13}, {14, 15},
+                    {16, 17}, {18, 19}, {20, 21}, {22, 23}, {24, 25}, {26, 27}, {28, 29}};
             break;
         case 1:
+            data = {{66, 1}};
+            break;
+        case 2:
+            data = {{67, 1}};
+            break;
+        case 3:
+            data = {{68, 1}};
             break;
         default:
-            qDebug() << i;
-            ++i;
             break;
         }
+
+        for (const int &key : data.keys())
+            dev->dev->setData(QModbusDataUnit::HoldingRegisters, key, data[key]);
+
+        ++i;
     });
     timer->start(1000);
 }
