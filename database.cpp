@@ -20,12 +20,6 @@ database::database(QObject *parent) : QObject(parent)
     dbQuery = QSqlQuery(db);
 
     createTable();
-
-    connect(dbModel, &QSqlTableModel::beforeInsert, [=](QSqlRecord &record) {
-        //qDebug() << record << dbModel->rowCount();
-        lastId = record.value("Id").toInt();
-        qDebug() << "Inserted with id: " << lastId;
-    });
 }
 
 database::~database()
@@ -89,6 +83,6 @@ const QStringList database::getRecentImages(const int  num) const
 
 const database &database::operator<< (int &lastId) const
 {
-    lastId = this->lastId;
+    lastId = dbQuery.lastInsertId().toInt();
     return *this;
 }

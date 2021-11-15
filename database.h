@@ -41,7 +41,6 @@ private:
     QSqlTableModel  *dbModel    = nullptr;
     QSqlQuery       dbQuery     = QSqlQuery();
     QString         setDBTable  = QString();
-    int             lastId;
 
     inline const static QString filename = "database.db";
 

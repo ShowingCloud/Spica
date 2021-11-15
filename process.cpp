@@ -25,10 +25,10 @@ void process::startProcessing(devPLC *dev, QObject *parent)
 #ifdef QT_DEBUG
 void process::startServer(devPLCServer *dev, QObject *parent)
 {
-    QTimer *timer = new QTimer();
+    QTimer *timer = new QTimer(parent);
     QObject::connect(timer, &QTimer::timeout, [=]() {
         static int i = 0;
-        QHash<int, int> data;
+        QHash<quint16, quint16> data;
         switch(i) {
         case 0:
             data = {{100, 1}, {2, 5}, {4, 6}, {6, 7}, {8, 9}, {10, 11}, {12, 13}, {14, 15},
@@ -47,7 +47,7 @@ void process::startServer(devPLCServer *dev, QObject *parent)
             break;
         }
 
-        for (const int &key : data.keys())
+        for (const quint16 &key : data.keys())
             dev->dev->setData(QModbusDataUnit::HoldingRegisters, key, data[key]);
 
         ++i;

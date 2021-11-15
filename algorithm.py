@@ -4,10 +4,10 @@ import sys, json, signal
 
 
 class algorithm(QtCore.QObject):
-    def __init__(self):
+    def __init__(self, num):
         QtCore.QObject.__init__(self)
 
-        self.memory = QtCore.QSharedMemory("algo_1", self)
+        self.memory = QtCore.QSharedMemory("algo_" + num, self)
         if (not self.memory.attach(QtCore.QSharedMemory.ReadOnly)):
             print('QSharedMemory: ', self.memory.error(), self.memory.errorString())
 
@@ -19,7 +19,7 @@ class algorithm(QtCore.QObject):
         timer = QtCore.QTimer(self)
         timer.timeout.connect(
             lambda: self.socket.state() == QtNetwork.QLocalSocket.ConnectedState
-                or self.socket.connectToServer("algo-1", QtCore.QIODevice.ReadWrite))
+                or self.socket.connectToServer("algo-" + num, QtCore.QIODevice.ReadWrite))
         timer.timeout.connect(
             lambda: self.memory.isAttached()
                 or self.memory.attach(QtCore.QSharedMemory.ReadOnly)
@@ -49,6 +49,6 @@ class algorithm(QtCore.QObject):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    algo = algorithm()
+    algo = algorithm(sys.argv[1])
     signal.signal(signal.SIGINT, lambda signum, frame: app.exit())
     sys.exit(app.exec())
