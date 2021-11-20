@@ -314,15 +314,39 @@ void process::processing()
             }
         }
 
-        waitTimer->deleteLater();
-    });
-    waitTimer->start(0);
+        qDebug() << "Finished one round of processing, resetting state";
+        if (not dev->writeData(dev->addrState, {0}, [](bool ret){
+            if (not ret) qDebug() << "Write state error";
+        }))
+            qDebug() << "Write state error";
 
-    QVector<quint16> writeCam = {1, 1, 1, 1, 1, 1, 1, 1, 1};
-    if (not dev->writeData(dev->camWriteAddr[devPLC::CAM_POS_B][0], writeCam, [](bool ret){
+        waitTimer->deleteLater();
+
+        QVector<quint16> writeCam = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+        if (not dev->writeData(dev->camWriteAddr[devPLC::CAM_POS_B][0], writeCam, [](bool ret){
             if (not ret) qDebug() << "Write camera results error";
         }))
-        qDebug() << "Write camera results error";
+            qDebug() << "Write camera results error";
+
+        QTimer *stateTimer = new QTimer(this);
+        QObject::connect(stateTimer, &QTimer::timeout, [=]() {
+            if (not dev->readData(dev->addrState, 1, [=](QVector<quint16> resp) {
+
+                if (resp.length() != 1 or resp.value(0) != 1) {
+                    stateTimer->start(500);
+                    return;
+                }
+
+                qDebug() << "Creating new process";
+                process *proc = new process(dev, this);
+                proc->processing();
+                stateTimer->deleteLater();
+            }))
+                stateTimer->start(500);
+        });
+        stateTimer->start(0);
+    });
+    waitTimer->start(0);
 }
 
 database &operator<< (database &db, const product &prod)
