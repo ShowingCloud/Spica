@@ -1,6 +1,6 @@
 # This Python file uses the following encoding: utf-8
 from PySide6 import QtCore, QtNetwork, QtWidgets
-import sys, json, signal
+import sys, json, signal, time
 
 
 class algorithm(QtCore.QObject):
@@ -45,7 +45,9 @@ class algorithm(QtCore.QObject):
     def gotFrame(self):
         req = self.socket.readAll()
         params = json.loads(req.data())
+        time.sleep(1)
         self.socket.write(self.readMem(params))
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

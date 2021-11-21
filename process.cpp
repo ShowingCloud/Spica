@@ -9,7 +9,7 @@ void process::startProcessing(devPLC *dev, QObject *parent)
         if (not dev->readData(dev->addrState, 1, [=](QVector<quint16> resp) {
 
             if (resp.length() != 1 or resp.value(0) != 1) {
-                stateTimer->start(500);
+                stateTimer->start(checkInterval);
                 return;
             }
 
@@ -17,7 +17,7 @@ void process::startProcessing(devPLC *dev, QObject *parent)
             proc->processing();
             stateTimer->deleteLater();
         }))
-            stateTimer->start(500);
+            stateTimer->start(checkInterval);
     });
     stateTimer->start(0);
 }
@@ -170,13 +170,20 @@ void process::startServer(devPLCServer *dev, QObject *parent)
 
 void process::processing()
 {
+    QDateTime prodTime = QDateTime::currentDateTime();
     QTimer *prodTimer = new QTimer(this);
     connect(prodTimer, &QTimer::timeout, [=]() {
-        prodTimer->setInterval(500);
+        prodTimer->setInterval(checkInterval);
         int startAddr = dev->camProdAddr[devPLC::CAM_POS_B][0];
         if (not dev->readData(startAddr, dev->prodAddrLen, [=](QVector<quint16> resp) {
+
             if (resp.length() != dev->prodAddrLen) {
-                prodTimer->start(500);
+                if (prodTime.msecsTo(QDateTime::currentDateTime()) > readPlcTimeout) {
+                    prodTimer->deleteLater();
+                    return;
+                }
+
+                prodTimer->start(checkInterval);
                 return;
             }
 
@@ -196,16 +203,23 @@ void process::processing()
             gotProd = true;
             prodTimer->deleteLater();
         }))
-            prodTimer->start(500);
+            prodTimer->start(checkInterval);
     });
     prodTimer->start(0);
 
+    QDateTime pneuTime = QDateTime::currentDateTime();
     QTimer *pneuTimer = new QTimer(this);
     connect(pneuTimer, &QTimer::timeout, [=]() {
-        pneuTimer->setInterval(500);
+        pneuTimer->setInterval(checkInterval);
         if (not dev->readData(dev->pneuAddr[0], dev->pneuAddrLen, [=](QVector<quint16> resp) {
+
             if (resp.length() != dev->pneuAddrLen) {
-                pneuTimer->start(500);
+                if (pneuTime.msecsTo(QDateTime::currentDateTime()) > readPlcTimeout) {
+                    pneuTimer->deleteLater();
+                    return;
+                }
+
+                pneuTimer->start(checkInterval);
                 return;
             }
 
@@ -218,93 +232,120 @@ void process::processing()
             pneuReady = true;
             pneuTimer->deleteLater();
         }))
-            pneuTimer->start(500);
+            pneuTimer->start(checkInterval);
     });
     pneuTimer->start(0);
 
+    QDateTime camReadyTime = QDateTime::currentDateTime();
     QTimer *camReadyTimer = new QTimer(this);
     connect(camReadyTimer, &QTimer::timeout, [=]() {
-        camReadyTimer->setInterval(500);
         int startAddr = dev->camReadAddr[devPLC::CAM_POS_B];
         if (not dev->readData(startAddr, dev->camReadAddrLen, [=](QVector<quint16> resp) {
+
             if (resp.length() != dev->camReadAddrLen) {
-                camReadyTimer->start(500);
+                if (camReadyTime.msecsTo(QDateTime::currentDateTime()) > camReadyTimeout) {
+                    camReadyTimer->deleteLater();
+                    return;
+                }
+
+                camReadyTimer->start(checkInterval);
                 return;
             }
 
-            for (const devPLC::CAM_POS campos : devPLC::camposList) {
+            for (const devPLC::CAM_POS campos : devPLC::camposList)
+
                 if (not camReady[campos]) {
                     if (resp[dev->camReadAddr[campos] - startAddr] == 1) {
                         for (const pylon::CAM_POS pos : pylon::positionStation.keys(campos)) {
                             imgId[pos] = pylon::posDevList[pos]->capture(); // TODO: might get -1
 
+                            QDateTime startCamTime = QDateTime::currentDateTime();
                             QMetaObject::Connection * const conn = new QMetaObject::Connection;
                             *conn = connect(pylon::posDevList[pos], &pylon::gotAlgo,
                                 [=](const int gotImgId, const int gotAlgoId, const QVector<int> gotResult) {
-                                    if (gotImgId != imgId[pos])
-                                        qDebug() << "!!! Should be equal: imgId: " << gotImgId << imgId[pos];
+                                if (gotImgId != imgId[pos])
+                                    qDebug() << "!!! Should be equal: imgId: " << gotImgId << imgId[pos];
 
-                                    algoId[pos] = gotAlgoId;
-                                    algoResult[pos] = gotResult;
-                                    algoReady[pos] = true;
+                                algoId[pos] = gotAlgoId;
+                                algoResult[pos] = gotResult;
+                                algoReady[pos] = true;
+                                qWarning() << "Got algo reply" << imgId[pos] << algoReady
+                                            << startCamTime.msecsTo(QDateTime::currentDateTime());
 
-                                    if (gotProd) {
-                                        for (int i = 0; i < 3; ++i) {
-                                            product *prod = camProd[i][campos];
-                                            prod->setAlgo(pos, gotResult[i], gotImgId, gotAlgoId);
-                                        }
+                                if (gotProd)
+                                    for (int i = 0; i < 3; ++i) {
+                                        product *prod = camProd[i][campos];
+                                        prod->setAlgo(pos, gotResult[i], gotImgId, gotAlgoId);
                                     }
 
+                                if (conn)
+                                    disconnect(*conn);
+                            });
+
+                            QTimer *algoTimeoutTimer = new QTimer(this);
+                            connect(algoTimeoutTimer, &QTimer::timeout, [=]() {
+                                if (conn) {
                                     disconnect(*conn);
                                     delete conn;
+                                }
+                                algoTimeoutTimer->deleteLater();
                             });
+                            algoTimeoutTimer->start(algoTimeout);
                         }
 
                         camReady[campos] = true;
                     } else {
-                        camReadyTimer->start(500);
+                        camReadyTimer->start(checkInterval);
                         return;
                     }
                 }
-            }
+
             camReadyTimer->deleteLater();
         }))
-            camReadyTimer->start(500);
+            camReadyTimer->start(checkInterval);
     });
-    camReadyTimer->start(0);
+    camReadyTimer->start(checkInterval); // check only after moments after for light to be prepared
 
+    QDateTime waitTime = QDateTime::currentDateTime();
     QTimer *waitTimer = new QTimer(this);
     connect(waitTimer, &QTimer::timeout, [=]() {
-        waitTimer->setInterval(500);
         if (not gotProd) {
-            waitTimer->start(500);
+            if (waitTime.msecsTo(QDateTime::currentDateTime()) > processTimeout) {
+                waitTimer->deleteLater();
+                process::startProcessing(dev, parent);
+                return;
+            }
+            waitTimer->start(checkInterval);
             return;
         }
 
+        bool timedout = (waitTime.msecsTo(QDateTime::currentDateTime()) > processTimeout);
+
         for (const pylon::CAM_POS campos : pylon::camposList) {
-            if (not algoReady[campos]) {
-                waitTimer->start(500);
+            if (not timedout and not algoReady[campos]) {
+                waitTimer->start(checkInterval);
                 return;
             }
 
             for (int i = 0; i < 3; ++i) {
                 product *prod = camProd[i][pylon::positionStation[campos]];
-                if (not prod->isAlgoReady(campos))
+                if (timedout and not algoReady[campos]) {
+                    qDebug() << "Timeout on algo ready" << prod->getProdId() << algoReady << waitTime.msecsTo(QDateTime::currentDateTime());
+                    prod->setAlgo(campos, false, 0, 0);
+                }
+                else if (not prod->isAlgoReady(campos)) {
+                    qInfo() << "Setting algo ready" << prod->getProdId() << algoReady;
                     prod->setAlgo(campos, algoResult[campos][i], imgId[campos], algoId[campos]);
-
-                if (prod->isReady()) {
-                    *globalDB << *prod;
-                    qDebug() << "Removed from product list: " << product::productList.removeAll(prod);
                 }
             }
         }
+        // We're here either because all algos ready or when processTimeout
 
         for (const devPLC::CAM_POS campos : devPLC::camposList) {
             for (int i = 0; i < 3 ; ++i) {
                 bool result = true;
                 for (const pylon::CAM_POS cam : pylon::positionStation.keys(campos))
-                    if (algoResult[cam][i] != 1)
-                        result = false;
+                    result = (algoResult[cam][i] == 1);
 
                 if (not dev->writeData(dev->camWriteAddr[campos][i], {result}, [](bool ret) {
                     if (not ret) qDebug() << "Write camera result error";
@@ -313,48 +354,34 @@ void process::processing()
             }
         }
 
-        if (not pneuReady) {
-            waitTimer->start(500);
+        if (not pneuReady and not timedout) {
+            waitTimer->start(checkInterval);
             return;
         }
         for (int i = 0; i < 3; ++i) {
             product *prod = pneuProd[i];
             if (not prod->isPneuReady())
                 prod->setPneu(pneuResult[i]);
+            else if (timedout)
+                prod->setPneu(false);
 
-            if (prod->isReady()) {
+            if (prod->isReady()) { // Both pneu and algo ready are set above when timeout
                 *globalDB << *prod;
-                qDebug() << "Removed from product list: " << product::productList.removeAll(prod);
+                qDebug() << "Removed from product list: " << prod->getProdId() << product::productList.removeAll(prod);
             }
         }
 
         qDebug() << "Finished one round of processing, resetting state";
-        if (not dev->writeData(dev->addrState, {0}, [](bool ret){
+        if (not dev->writeData(dev->addrState, {2}, [](bool ret){
             if (not ret) qDebug() << "Write state error";
         }))
             qDebug() << "Write state error";
 
         waitTimer->deleteLater();
 
-        QTimer *stateTimer = new QTimer(this);
-        QObject::connect(stateTimer, &QTimer::timeout, [=]() {
-            if (not dev->readData(dev->addrState, 1, [=](QVector<quint16> resp) {
-
-                if (resp.length() != 1 or resp.value(0) != 1) {
-                    stateTimer->start(500);
-                    return;
-                }
-
-                qDebug() << "Creating new process";
-                process *proc = new process(dev, this);
-                proc->processing();
-                stateTimer->deleteLater();
-            }))
-                stateTimer->start(500);
-        });
-        stateTimer->start(0);
+        process::startProcessing(dev, parent);
     });
-    waitTimer->start(0);
+    waitTimer->start(checkInterval); // check only after moments later
 }
 
 database &operator<< (database &db, const product &prod)

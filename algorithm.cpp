@@ -30,6 +30,7 @@ algorithm::algorithm(const pylon::CAM_POS pos, const pylon *cam, QObject *parent
         });
         connect(socket, &QLocalSocket::readyRead, [=](){
             const QJsonDocument resp = QJsonDocument::fromJson(socket->readAll());
+            result = {0, 0, 0};
             imgId = resp["id"].toInt();
             resultJSON = resp.toJson(QJsonDocument::Compact);
 

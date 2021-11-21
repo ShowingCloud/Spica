@@ -69,6 +69,10 @@ public:
         return true;
     }
 
+    inline int getProdId() {
+        return prodId;
+    }
+
     inline static QVector<product *> productList = {};
 
 private:
@@ -88,11 +92,20 @@ class process : public QObject
     Q_OBJECT
 
 public:
-    explicit process(devPLC *dev, QObject *parent = nullptr) : QObject(parent), dev(dev) {
-        for (devPLC::CAM_POS campos : devPLC::camposList)
+    explicit process(devPLC *dev, QObject *parent = nullptr) : QObject(parent), dev(dev), parent(parent) {
+        for (devPLC::CAM_POS campos : devPLC::camposList) {
+            for (int i = 0; i < 3; ++i) {
+                camProdId[i][campos] = 0;
+                camProd[i][campos] = nullptr;
+            }
             camReady[campos] = false;
-        for (pylon::CAM_POS campos : pylon::camposList)
+        }
+        for (pylon::CAM_POS campos : pylon::camposList) {
+            imgId[campos] = 0;
+            algoId[campos] = 0;
+            algoResult[campos] = {0, 0, 0};
             algoReady[campos] = false;
+        }
     }
 
     static void startProcessing(devPLC *dev, QObject *parent = nullptr);
@@ -101,14 +114,21 @@ public:
 #endif
     void processing();
 
+    inline static const int checkInterval = 500;
+    inline static const int camReadyTimeout = 4000;
+    inline static const int algoTimeout = 4000;
+    inline static const int readPlcTimeout = 1000;
+    inline static const int processTimeout = 6500;
+
 signals:
 
 private:
     devPLC *dev;
+    QObject *parent;
     bool gotProd = false;
-    int pneuProdId[3];
-    product *pneuProd[3];
-    int pneuResult[3];
+    int pneuProdId[3] = {0, 0, 0};
+    product *pneuProd[3] = {nullptr, nullptr, nullptr};
+    int pneuResult[3] = {0, 0, 0};
     bool pneuReady = false;
     QHash<devPLC::CAM_POS, int> camProdId[3];
     QHash<devPLC::CAM_POS, product *> camProd[3];

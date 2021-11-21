@@ -28,6 +28,8 @@ public:
     static void initialize(QObject *parent);
     static void destroy();
     int capture();
+    int lightOn();
+    int lightOff();
 
     enum CAM_POS { CAM_POS_1 = 1, CAM_POS_2, CAM_POS_3, CAM_POS_4, CAM_POS_5,
                    CAM_POS_6, CAM_POS_7, CAM_POS_8, CAM_POS_OTHERS };
@@ -45,6 +47,7 @@ private:
     CAM_POS position;
     devPLC::CAM_POS station;
     algorithm *algo;
+    bool light;
 
     QString currentFilename;
     const quint8 *currentImage;

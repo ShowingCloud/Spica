@@ -42,7 +42,7 @@ bool devPLC::readData(const int start, const quint16 len, const std::function<vo
     QModbusReply *reply = dev->sendReadRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, start, len),
                 serverAddr);
-    if (!reply) {
+    if (not reply) {
         qDebug() << "Read error: " << dev->errorString();
         return false;
     } else {
@@ -102,7 +102,7 @@ bool devPLC::writeData(const int start, const QVector<quint16> value, const std:
     QModbusReply *reply = dev->sendWriteRequest(
                 QModbusDataUnit(QModbusDataUnit::HoldingRegisters, start, value),
                 serverAddr);
-    if (!reply) {
+    if (not reply) {
         qDebug() << "Write error: " << dev->errorString();
         return false;
     } else {

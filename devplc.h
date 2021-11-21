@@ -36,7 +36,7 @@ private:
     const QString addr = "192.168.2.3";
     const int port = 502;
 #endif
-    const int timeout = 1000;
+    const int timeout = 450;
     const int retries = 3;
     const int serverAddr = 255;
     const int startRead = 0;
