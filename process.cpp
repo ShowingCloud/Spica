@@ -299,6 +299,20 @@ void process::processing()
             }
         }
 
+        for (const devPLC::CAM_POS campos : devPLC::camposList) {
+            for (int i = 0; i < 3 ; ++i) {
+                bool result = true;
+                for (const pylon::CAM_POS cam : pylon::positionStation.keys(campos))
+                    if (algoResult[cam][i] != 1)
+                        result = false;
+
+                if (not dev->writeData(dev->camWriteAddr[campos][i], {result}, [](bool ret) {
+                    if (not ret) qDebug() << "Write camera result error";
+                }))
+                    qDebug() << "Write camera result error";
+            }
+        }
+
         if (not pneuReady) {
             waitTimer->start(500);
             return;
@@ -321,12 +335,6 @@ void process::processing()
             qDebug() << "Write state error";
 
         waitTimer->deleteLater();
-
-        QVector<quint16> writeCam = {1, 1, 1, 1, 1, 1, 1, 1, 1};
-        if (not dev->writeData(dev->camWriteAddr[devPLC::CAM_POS_B][0], writeCam, [](bool ret){
-            if (not ret) qDebug() << "Write camera results error";
-        }))
-            qDebug() << "Write camera results error";
 
         QTimer *stateTimer = new QTimer(this);
         QObject::connect(stateTimer, &QTimer::timeout, [=]() {

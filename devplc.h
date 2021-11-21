@@ -64,10 +64,10 @@ private:
         { CAM_POS_B, { 2, 12, 22 } },
         { CAM_POS_C, { 4, 14, 24 } },
         { CAM_POS_D, { 6, 16, 26 } }};
-    inline static QHash<CAM_POS, QVector<pylon *>> devList = {
-        { CAM_POS_B, {} },
-        { CAM_POS_C, {} },
-        { CAM_POS_D, {} }};
+    //inline static QHash<CAM_POS, QVector<pylon *>> devList = {
+    //    { CAM_POS_B, {} },
+    //    { CAM_POS_C, {} },
+    //    { CAM_POS_D, {} }};
     inline static const QVector<int> pneuAddr = { 34, 39, 44 };
     inline static const quint16 pneuAddrLen = 11;
     inline static const QVector<int> pneuProdAddr = { 8, 18, 28 };

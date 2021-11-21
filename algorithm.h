@@ -32,7 +32,7 @@ private:
     int imgId;
     int algoId;
     QString resultJSON;
-    QVector<int> result;
+    QVector<int> result = {0, 0, 0};
 };
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)

@@ -4,6 +4,7 @@
 #include <QLocalSocket>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <iso646.h>
 
 #include "algorithm.h"
@@ -28,10 +29,15 @@ algorithm::algorithm(const pylon::CAM_POS pos, const pylon *cam, QObject *parent
             socket = nullptr;
         });
         connect(socket, &QLocalSocket::readyRead, [=](){
-            QJsonDocument resp = QJsonDocument::fromJson(socket->readAll());
+            const QJsonDocument resp = QJsonDocument::fromJson(socket->readAll());
             imgId = resp["id"].toInt();
-            resultJSON = resp.toJson();
-            result = {1, 1, 1};
+            resultJSON = resp.toJson(QJsonDocument::Compact);
+
+            for (const QJsonValueRef p : resp["results"].toArray()) {
+                QJsonObject prod = p.toObject();
+                result[prod["id"].toInt()] = not prod["have_defects"].toBool();
+            }
+
             *globalDB << *this << this->algoId;
 
             emit cam->gotAlgo(imgId, this->algoId, result);
