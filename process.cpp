@@ -154,6 +154,7 @@ void process::startServer(devPLCServer *dev, QObject *parent)
         case 37:
         case 38:
         case 39:
+            i = -1;
             break;
         default:
             break;

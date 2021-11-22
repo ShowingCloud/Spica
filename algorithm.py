@@ -37,6 +37,7 @@ class algorithm(QtCore.QObject):
             QtCore.QCryptographicHash.Md5).toHex())
         self.memory.unlock()
 
+        time.sleep(1)
         return QtCore.QByteArray(json.dumps({
             "id": params["id"],
             "size": params["size"]
@@ -45,7 +46,6 @@ class algorithm(QtCore.QObject):
     def gotFrame(self):
         req = self.socket.readAll()
         params = json.loads(req.data())
-        time.sleep(1)
         self.socket.write(self.readMem(params))
 
 
