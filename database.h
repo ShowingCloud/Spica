@@ -12,6 +12,7 @@
 class pylon;
 class algorithm;
 class product;
+class productRecordModel;
 
 class database : public QObject
 {
@@ -25,9 +26,11 @@ public:
     friend database &operator<< (database &db, const algorithm &algo);
     friend database &operator<< (database &db, const product &prod);
     const database &operator<< (int &lastId) const;
+    friend productRecordModel &operator<< (productRecordModel &model, const database &db);
 
     const QString getRecentImages() const;
     const QStringList getRecentImages(const int  num) const;
+    const QStringList getImages(const QVector<int> num) const;
 
     enum DB_TBL { DB_TBL_IMG, DB_TBL_ALGO, DB_TBL_PROD };
     static const inline DB_TBL DB_TBL_ALL[] = { DB_TBL_IMG, DB_TBL_ALGO, DB_TBL_PROD };
@@ -40,7 +43,9 @@ private:
     QSqlDatabase    db          = QSqlDatabase();
     QSqlTableModel  *dbModel    = nullptr;
     QSqlQuery       dbQuery     = QSqlQuery();
-    QString         setDBTable  = QString();
+    QSqlTableModel  *prodModel  = nullptr;
+    QSqlTableModel  *imgModel   = nullptr;
+    QSqlTableModel  *algoModel  = nullptr;
 
     inline const static QString filename = "database.db";
 

@@ -16,3 +16,47 @@ const QStringList frontend::getRecentImages(const int num)
         return ret << "file:///" + QFileInfo(str).absoluteFilePath();
     });
 }
+
+const QStringList productRecordModel::getImages(const int row)
+{
+    QVector<int> imgs;
+    for (int i = 1; i < 9; ++i)
+        imgs << prodModel->record(row).value("Cam" + QString::number(i) + "Img").toInt();
+
+    QStringList list = globalDB->getImages(imgs);
+    return std::accumulate(list.begin(), list.end(), QStringList(), [](QStringList ret, const QString str) {
+        return ret << "file:///" + QFileInfo(str).absoluteFilePath();
+    });
+}
+
+void productRecordModel::fillData()
+{
+    beginResetModel();
+    *this << *globalDB;
+    endResetModel();
+}
+
+productRecordModel &operator<< (productRecordModel &model, const database &db)
+{
+    model.records = {};
+    model.prodModel = db.prodModel;
+    db.prodModel->select();
+
+    for (int i = 0; i < qMin(db.prodModel->rowCount(), 100); ++i) {
+        QSqlRecord r = db.prodModel->record(i);
+        if (r.value("Id").toString() == "")
+            return model;
+
+        QStringList s = {};
+        s << r.value("ProdId").toString();
+        s << r.value("Time").toString();
+        s << QString::number(r.value("PneuResult").toInt());
+        for (int j = 1; j < 9; ++j)
+            s << QString::number(r.value("Cam" + QString::number(j) + "Result").toInt());
+        s << QString::number(r.value("Result").toInt());
+
+        model.records << s;
+    }
+
+    return model;
+}

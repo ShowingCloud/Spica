@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     translator.load(":/i18n/zh_CN");
     app.installTranslator(&translator);
 
-    globalDB = new database();
+    globalDB = new database(&app);
     pylon::initialize(&app);
     devPLC plc(&app);
     process::startProcessing(&plc, &app);
@@ -39,20 +39,15 @@ int main(int argc, char *argv[])
     process::startServer(&plcserver, &app);
 #endif
 
-    qmlRegisterSingletonType<devPLC>("spica.devplc", 1, 0, "DevPLC", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+    qmlRegisterSingletonType<frontend>("spica.frontend", 1, 0, "Frontend", [&app](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
-        return new devPLC();
+        return new frontend(&app);
     });
-    qmlRegisterSingletonType<devPLCServer>("spica.devplc", 1, 0, "DevPLCServer", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+    qmlRegisterSingletonType<productRecordModel>("spica.frontend", 1, 0, "ProductRecordModel", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
-        return new devPLCServer();
-    });
-    qmlRegisterSingletonType<frontend>("spica.frontend", 1, 0, "Frontend", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
-        Q_UNUSED(engine)
-        Q_UNUSED(scriptEngine)
-        return new frontend();
+        return new productRecordModel();
     });
 
     QQmlApplicationEngine engine;

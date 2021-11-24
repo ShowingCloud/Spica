@@ -20,6 +20,16 @@ database::database(QObject *parent) : QObject(parent)
     dbQuery = QSqlQuery(db);
 
     createTable();
+
+    prodModel = new QSqlTableModel(this, db);
+    prodModel->setTable(DB_TABLES[DB_TBL_PROD]);
+    prodModel->setSort(0, Qt::DescendingOrder);
+    imgModel = new QSqlTableModel(this, db);
+    imgModel->setTable(DB_TABLES[DB_TBL_IMG]);
+    imgModel->setSort(0, Qt::DescendingOrder);
+    algoModel = new QSqlTableModel(this, db);
+    algoModel->setTable(DB_TABLES[DB_TBL_ALGO]);
+    algoModel->setSort(0, Qt::DescendingOrder);
 }
 
 database::~database()
@@ -78,6 +88,17 @@ const QStringList database::getRecentImages(const int  num) const
         }
     }
 
+    return ret;
+}
+
+const QStringList database::getImages(const QVector<int> num) const
+{
+    QStringList ret = {};
+    for (const int n : num) {
+        imgModel->setFilter("Id=" + QString::number(n));
+        imgModel->select();
+        ret << imgModel->record(0).value("FileName").toString();
+    }
     return ret;
 }
 

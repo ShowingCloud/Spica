@@ -77,7 +77,10 @@ Window {
         }
         Item {
             id: tabHistory
-            LabeledFrame { label: qsTr("History") }
+            LabeledFrame {
+                label: qsTr("History")
+                WinHistory{}
+            }
         }
         Item {
             id: tabStatistics

@@ -4,5 +4,6 @@
         <file>WinPreference.qml</file>
         <file>LabeledFrame.qml</file>
         <file>WinDetection.qml</file>
+        <file>WinHistory.qml</file>
     </qresource>
 </RCC>

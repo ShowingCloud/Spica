@@ -40,7 +40,16 @@ class algorithm(QtCore.QObject):
         time.sleep(1)
         return QtCore.QByteArray(json.dumps({
             "id": params["id"],
-            "size": params["size"]
+            "results" : [{
+                "id": 0,
+                "have_defects": True
+            }, {
+                "id": 1,
+                "have_defects": False
+            }, {
+                "id": 2,
+                "have_defects": True
+            }]
         }))
 
     def gotFrame(self):
