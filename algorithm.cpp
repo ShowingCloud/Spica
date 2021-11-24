@@ -5,6 +5,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QPoint>
 #include <iso646.h>
 
 #include "algorithm.h"
@@ -31,6 +32,10 @@ algorithm::algorithm(const pylon::CAM_POS pos, const pylon *cam, QObject *parent
         connect(socket, &QLocalSocket::readyRead, [=](){
             const QJsonDocument resp = QJsonDocument::fromJson(socket->readAll());
             result = {0, 0, 0};
+            resultImg = {{}, {}, {}};
+            resultDefs = {{}, {}, {}};
+            resultAreas = {{}, {}, {}};
+
             imgId = resp["id"].toInt();
             resultJSON = resp.toJson(QJsonDocument::Compact);
 
@@ -38,19 +43,18 @@ algorithm::algorithm(const pylon::CAM_POS pos, const pylon *cam, QObject *parent
                 QJsonObject prod = p.toObject();
                 int id = prod["id"].toInt();
                 for (const QJsonValueRef r : prod["location"].toArray())
-                    resultImg[id] << QPair(r.toArray()[0].toInt(), r.toArray()[1].toInt());
+                    resultImg[id] << QPoint(r.toArray()[0].toInt(), r.toArray()[1].toInt());
 
                 result[id] = not prod["have_defects"].toBool();
-                if (not result[id]) {
+                if (not result[id])
                     for (const QJsonValueRef r : prod["defects"].toArray()) {
                         resultDefs[id] << r.toObject()["type"].toInt();
-
-                        QVector<QPair<int, int>> area;
-                        for (const QJsonValueRef s : r.toObject()["pos"].toArray())
-                            area << QPair(s.toArray()[0].toInt(), s.toArray()[1].toInt());
-                        resultAreas[id] << area;
+                        resultAreas[id] << std::accumulate(r.toObject()["pos"].toArray().cbegin(),
+                            r.toObject()["pos"].toArray().cend(), QVector<QPoint>(),
+                            [](QVector<QPoint> v, const QJsonValue val){
+                                return v << QPoint(val.toArray()[0].toInt(), val.toArray()[1].toInt());
+                        });
                     }
-                }
             }
 
             *globalDB << *this << this->algoId;
@@ -119,23 +123,23 @@ database &operator<< (database &db, const algorithm &algo)
     r.setValue("ImgID", algo.imgId);
     r.setValue("RsltJSON", algo.resultJSON);
     for (int i = 0; i < 3; ++i) {
-        r.setValue("Rslt" + QString::number(i + 1), algo.result[i]);
-        QJsonArray img, areas, defs;
-        for (const QPair<int, int> &l : algo.resultImg[i])
-            img << (QJsonArray() << l.first << l.second);
-        r.setValue("Rslt" + QString::number(i + 1) + "Img", QJsonDocument(img).toJson(QJsonDocument::Compact));
+        QString s_i = QString::number(i + 1);
+        r.setValue("Rslt" + s_i, algo.result[i]);
 
-        for (const QVector<QPair<int, int>> &l : algo.resultAreas[i]) {
-            QJsonArray a;
-            for (const QPair<int, int> &p : l)
-                a << (QJsonArray() << p.first << p.second);
-            areas << a;
-        }
-        r.setValue("Rslt" + QString::number(i + 1) + "Areas", QJsonDocument(areas).toJson(QJsonDocument::Compact));
+        QJsonArray img, areas, defs;
+        for (const QPoint l : algo.resultImg[i])
+            img << QJsonArray({l.x(), l.y()});
+        r.setValue("Rslt" + s_i + "Img", QJsonDocument(img).toJson(QJsonDocument::Compact));
+
+        for (const QVector<QPoint> &l : algo.resultAreas[i])
+            areas << std::accumulate(l.cbegin(), l.cend(), QJsonArray(), [](QJsonArray arr, const QPoint p){
+                     return arr << QJsonArray({p.x(), p.y()});
+            });
+        r.setValue("Rslt" + s_i + "Areas", QJsonDocument(areas).toJson(QJsonDocument::Compact));
 
         for (const int d : algo.resultDefs[i])
             defs << d;
-        r.setValue("Rslt" + QString::number(i + 1) + "Defs", QJsonDocument(defs).toJson(QJsonDocument::Compact));
+        r.setValue("Rslt" + s_i + "Defs", QJsonDocument(defs).toJson(QJsonDocument::Compact));
     }
     r.setValue("Time", QDateTime::currentDateTime());
     if (!db.dbModel->insertRecord(-1, r))

@@ -6,6 +6,7 @@
 #include <QRunnable>
 #include <QThreadPool>
 #include <QLocalServer>
+#include <QPoint>
 #include <iso646.h>
 
 #include "pylon.h"
@@ -33,8 +34,8 @@ private:
     int algoId;
     QString resultJSON;
     QVector<int> result = {0, 0, 0};
-    QVector<QVector<QPair<int, int>>> resultImg = {{}, {}, {}};
-    QVector<QVector<QVector<QPair<int, int>>>> resultAreas = {{}, {}, {}};
+    QVector<QVector<QPoint>> resultImg = {{}, {}, {}};
+    QVector<QVector<QVector<QPoint>>> resultAreas = {{}, {}, {}};
     QVector<QVector<int>> resultDefs = {{}, {}, {}};
 };
 
