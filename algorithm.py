@@ -42,13 +42,28 @@ class algorithm(QtCore.QObject):
             "id": params["id"],
             "results" : [{
                 "id": 0,
-                "have_defects": True
+                "have_defects": True,
+                "defects": [{
+                    "pos": [[100, 100], [200, 200], [100, 200]],
+                    "type": 1
+                }, {
+                    "pos": [[200, 200], [300, 300], [200, 300]],
+                    "type": 2
+                }]
             }, {
                 "id": 1,
-                "have_defects": False
+                "have_defects": False,
+                "defects": [{
+                    "pos": [[100, 100], [200, 100], [200, 200], [100, 200]],
+                    "type": 3
+                }]
             }, {
                 "id": 2,
-                "have_defects": True
+                "have_defects": True,
+                "defects": [{
+                    "pos": [[100, 100], [100, 200], [200, 200], [300, 150], [200, 100]],
+                    "type": 4
+                }]
             }]
         }))
 

@@ -36,7 +36,21 @@ algorithm::algorithm(const pylon::CAM_POS pos, const pylon *cam, QObject *parent
 
             for (const QJsonValueRef p : resp["results"].toArray()) {
                 QJsonObject prod = p.toObject();
-                result[prod["id"].toInt()] = not prod["have_defects"].toBool();
+                int id = prod["id"].toInt();
+                for (const QJsonValueRef r : prod["location"].toArray())
+                    resultImg[id] << QPair(r.toArray()[0].toInt(), r.toArray()[1].toInt());
+
+                result[id] = not prod["have_defects"].toBool();
+                if (not result[id]) {
+                    for (const QJsonValueRef r : prod["defects"].toArray()) {
+                        resultDefs[id] << r.toObject()["type"].toInt();
+
+                        QVector<QPair<int, int>> area;
+                        for (const QJsonValueRef s : r.toObject()["pos"].toArray())
+                            area << QPair(s.toArray()[0].toInt(), s.toArray()[1].toInt());
+                        resultAreas[id] << area;
+                    }
+                }
             }
 
             *globalDB << *this << this->algoId;
@@ -90,7 +104,7 @@ algorithm &operator<< (algorithm &algo, const pylon &cam)
                 packet["filename"] = cam.currentFilename;
 
                 if (algo.socket && algo.socket->isOpen())
-                    emit algo.writeSocket(QJsonDocument(packet).toJson());
+                    emit algo.writeSocket(QJsonDocument(packet).toJson(QJsonDocument::Compact));
             }));
         }
     }
@@ -104,8 +118,25 @@ database &operator<< (database &db, const algorithm &algo)
     QSqlRecord r = db.dbModel->record();
     r.setValue("ImgID", algo.imgId);
     r.setValue("RsltJSON", algo.resultJSON);
-    for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < 3; ++i) {
         r.setValue("Rslt" + QString::number(i + 1), algo.result[i]);
+        QJsonArray img, areas, defs;
+        for (const QPair<int, int> &l : algo.resultImg[i])
+            img << (QJsonArray() << l.first << l.second);
+        r.setValue("Rslt" + QString::number(i + 1) + "Img", QJsonDocument(img).toJson(QJsonDocument::Compact));
+
+        for (const QVector<QPair<int, int>> &l : algo.resultAreas[i]) {
+            QJsonArray a;
+            for (const QPair<int, int> &p : l)
+                a << (QJsonArray() << p.first << p.second);
+            areas << a;
+        }
+        r.setValue("Rslt" + QString::number(i + 1) + "Areas", QJsonDocument(areas).toJson(QJsonDocument::Compact));
+
+        for (const int d : algo.resultDefs[i])
+            defs << d;
+        r.setValue("Rslt" + QString::number(i + 1) + "Defs", QJsonDocument(defs).toJson(QJsonDocument::Compact));
+    }
     r.setValue("Time", QDateTime::currentDateTime());
     if (!db.dbModel->insertRecord(-1, r))
         qDebug() << db.dbModel->lastError();

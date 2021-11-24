@@ -33,6 +33,9 @@ private:
     int algoId;
     QString resultJSON;
     QVector<int> result = {0, 0, 0};
+    QVector<QVector<QPair<int, int>>> resultImg = {{}, {}, {}};
+    QVector<QVector<QVector<QPair<int, int>>>> resultAreas = {{}, {}, {}};
+    QVector<QVector<int>> resultDefs = {{}, {}, {}};
 };
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
