@@ -49,11 +49,17 @@ public:
         switch (role) {
         case Qt::DisplayRole:
             return records[index.row()][index.column()];
-        case Qt::ForegroundRole:
-            return QColor("black");
-        case Qt::TextAlignmentRole: {
+
+        case Qt::ForegroundRole: {
+            if (index.row() == selectedRow)
+                return QColor("blue");
+            else
+                return QColor("black");
+        }
+        case Qt::TextAlignmentRole:
             return Qt::AlignHCenter;
-        } case Qt::SizeHintRole: {
+
+        case Qt::SizeHintRole: {
             if (index.column() == 0)
                 return 50;
             else if (index.column() == 1)
@@ -98,6 +104,7 @@ public slots:
 private:
     QList<QStringList> records;
     QSqlTableModel *prodModel;
+    int selectedId = -1, selectedRow = -1;
 };
 
 #endif // FRONTEND_H
