@@ -103,9 +103,9 @@ database &operator<< (database &db, const algorithm &algo)
     db.dbModel->setTable(db.DB_TABLES[db.DB_TBL_ALGO]);
     QSqlRecord r = db.dbModel->record();
     r.setValue("ImgID", algo.imgId);
-    r.setValue("ResultJSON", algo.resultJSON);
+    r.setValue("RsltJSON", algo.resultJSON);
     for (int i = 0; i < 3; ++i)
-        r.setValue("Result" + QString::number(i + 1), algo.result[i]);
+        r.setValue("Rslt" + QString::number(i + 1), algo.result[i]);
     r.setValue("Time", QDateTime::currentDateTime());
     if (!db.dbModel->insertRecord(-1, r))
         qDebug() << db.dbModel->lastError();

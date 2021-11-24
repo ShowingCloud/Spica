@@ -60,10 +60,10 @@ productRecordModel &operator<< (productRecordModel &model, const database &db)
         QStringList s = {};
         s << r.value("ProdId").toString();
         s << r.value("Time").toString();
-        s << QString::number(r.value("PneuResult").toInt());
+        s << QString::number(r.value("PneuRslt").toInt());
         for (int j = 1; j < 9; ++j)
-            s << QString::number(r.value("Cam" + QString::number(j) + "Result").toInt());
-        s << QString::number(r.value("Result").toInt());
+            s << QString::number(r.value("Cam" + QString::number(j) + "Rslt").toInt());
+        s << QString::number(r.value("Rslt").toInt());
 
         model.records << s;
     }

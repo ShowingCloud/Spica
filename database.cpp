@@ -97,7 +97,20 @@ const QStringList database::getImages(const QVector<int> num) const
     for (const int n : num) {
         imgModel->setFilter("Id=" + QString::number(n));
         imgModel->select();
-        ret << imgModel->record(0).value("FileName").toString();
+        QString file = imgModel->record(0).value("FileName").toString();
+        if (file == "") file = "resources/empty.png";
+        ret << file;
+    }
+    return ret;
+}
+
+const QStringList database::getAlgoDefects(const QVector<int> num) const
+{
+    QStringList ret = {};
+    for (const int n : num) {
+        algoModel->setFilter("Id=" + QString::number(n));
+        algoModel->select();
+        ret << algoModel->record(0).value("FileName").toString();
     }
     return ret;
 }

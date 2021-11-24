@@ -332,7 +332,7 @@ void process::processing()
                 product *prod = camProd[i][pylon::positionStation[campos]];
                 if (timedout and not algoReady[campos]) {
                     qDebug() << "Timeout on algo ready" << prod->getProdId() << algoReady << waitTime.msecsTo(QDateTime::currentDateTime());
-                    prod->setAlgo(campos, false, 0, 0);
+                    prod->setAlgo(campos, false, imgId[campos], 0);
                 }
                 else if (not prod->isAlgoReady(campos)) {
                     qInfo() << "Setting algo ready" << prod->getProdId() << algoReady;
@@ -390,13 +390,13 @@ database &operator<< (database &db, const product &prod)
     db.dbModel->setTable(db.DB_TABLES[db.DB_TBL_PROD]);
     QSqlRecord r = db.dbModel->record();
     r.setValue("ProdID", prod.prodId);
-    r.setValue("PneuResult", prod.pneuResult);
+    r.setValue("PneuRslt", prod.pneuResult);
     r.setValue("Time", QDateTime::currentDateTime());
     r.setValue("LCR", prod.lcr);
     for (const pylon::CAM_POS campos : pylon::camposList) {
         r.setValue("Cam" + QString::number(campos) + "Img", prod.imgId[campos]);
         r.setValue("Cam" + QString::number(campos) + "Algo", prod.algoId[campos]);
-        r.setValue("Cam" + QString::number(campos) + "Result", prod.algoResult[campos]);
+        r.setValue("Cam" + QString::number(campos) + "Rslt", prod.algoResult[campos]);
     }
     if (!db.dbModel->insertRecord(-1, r))
         qDebug() << db.dbModel->lastError();

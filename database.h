@@ -31,6 +31,7 @@ public:
     const QString getRecentImages() const;
     const QStringList getRecentImages(const int  num) const;
     const QStringList getImages(const QVector<int> num) const;
+    const QStringList getAlgoDefects(const QVector<int> num) const;
 
     enum DB_TBL { DB_TBL_IMG, DB_TBL_ALGO, DB_TBL_PROD };
     static const inline DB_TBL DB_TBL_ALL[] = { DB_TBL_IMG, DB_TBL_ALGO, DB_TBL_PROD };
@@ -57,24 +58,26 @@ private:
                       {"CamID", "INTEGER"}, {"Position", "INTEGER"}, {"Time", "DATETIME"},
                       {"Filename", "TEXT"}}},
         {DB_TBL_ALGO, {{"Id", "INTEGER", "UNIQUE", "PRIMARY KEY", "AUTOINCREMENT"},
-                       {"ImgID", "INTEGER"}, {"ResultJSON", "TEXT"}, {"TIme", "DATETIME"},
-                       {"Result1", "INTEGER"}, {"Result2", "INTEGER"}, {"Result3", "INTEGER"}}},
+                       {"ImgID", "INTEGER"}, {"RsltJSON", "TEXT"}, {"Time", "DATETIME"},
+                       {"Rslt1", "INTEGER"}, {"Rslt1Img", "TEXT"}, {"Rslt1Areas", "TEXT"}, {"Rslt1Defs", "TEXT"},
+                       {"Rslt2", "INTEGER"}, {"Rslt2Img", "TEXT"}, {"Rslt2Areas", "TEXT"}, {"Rslt2Defs", "TEXT"},
+                       {"Rslt3", "INTEGER"}, {"Rslt3Img", "TEXT"}, {"Rslt3Areas", "TEXT"}, {"Rslt3Defs", "TEXT"}}},
         {DB_TBL_PROD, {{"Id", "INTEGER", "UNIQUE", "PRIMARY KEY", "AUTOINCREMENT"},
-                       {"ProdId", "INTEGER"}, {"PneuResult", "INTEGER"}, {"Time", "DATETIME"},
-                       {"Cam1Img", "INTEGER"}, {"Cam1Algo", "INTEGER"}, {"Cam1Result", "INTEGER"},
-                       {"Cam2Img", "INTEGER"}, {"Cam2Algo", "INTEGER"}, {"Cam2Result", "INTEGER"},
-                       {"Cam3Img", "INTEGER"}, {"Cam3Algo", "INTEGER"}, {"Cam3Result", "INTEGER"},
-                       {"Cam4Img", "INTEGER"}, {"Cam4Algo", "INTEGER"}, {"Cam4Result", "INTEGER"},
-                       {"Cam5Img", "INTEGER"}, {"Cam5Algo", "INTEGER"}, {"Cam5Result", "INTEGER"},
-                       {"Cam6Img", "INTEGER"}, {"Cam6Algo", "INTEGER"}, {"Cam6Result", "INTEGER"},
-                       {"Cam7Img", "INTEGER"}, {"Cam7Algo", "INTEGER"}, {"Cam7Result", "INTEGER"},
-                       {"Cam8Img", "INTEGER"}, {"Cam8Algo", "INTEGER"}, {"Cam8Result", "INTEGER"},
-                       {"Result", "INTEGER"}, {"LCR", "INTEGER"}}}};
+                       {"ProdId", "INTEGER"}, {"PneuRslt", "INTEGER"}, {"Time", "DATETIME"},
+                       {"Cam1Img", "INTEGER"}, {"Cam1Algo", "INTEGER"}, {"Cam1Rslt", "INTEGER"},
+                       {"Cam2Img", "INTEGER"}, {"Cam2Algo", "INTEGER"}, {"Cam2Rslt", "INTEGER"},
+                       {"Cam3Img", "INTEGER"}, {"Cam3Algo", "INTEGER"}, {"Cam3Rslt", "INTEGER"},
+                       {"Cam4Img", "INTEGER"}, {"Cam4Algo", "INTEGER"}, {"Cam4Rslt", "INTEGER"},
+                       {"Cam5Img", "INTEGER"}, {"Cam5Algo", "INTEGER"}, {"Cam5Rslt", "INTEGER"},
+                       {"Cam6Img", "INTEGER"}, {"Cam6Algo", "INTEGER"}, {"Cam6Rslt", "INTEGER"},
+                       {"Cam7Img", "INTEGER"}, {"Cam7Algo", "INTEGER"}, {"Cam7Rslt", "INTEGER"},
+                       {"Cam8Img", "INTEGER"}, {"Cam8Algo", "INTEGER"}, {"Cam8Rslt", "INTEGER"},
+                       {"Rslt", "INTEGER"}, {"LCR", "INTEGER"}}}};
 
     inline static const QHash<DB_TBL, QStringList> DB_INDEXES = {
         {DB_TBL_IMG, {"CamID", "Position", "Time"}},
-        {DB_TBL_ALGO, {"ImgID", "Time", "Result"}},
-        {DB_TBL_PROD, {"ProdId", "Time", "Result"}}};
+        {DB_TBL_ALGO, {"ImgID", "Time", "Rslt1", "Rslt2", "Rslt3"}},
+        {DB_TBL_PROD, {"ProdId", "Time", "Rslt"}}};
 
 signals:
 
