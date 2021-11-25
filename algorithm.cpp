@@ -31,10 +31,10 @@ algorithm::algorithm(const pylon::CAM_POS pos, const pylon *cam, QObject *parent
         });
         connect(socket, &QLocalSocket::readyRead, [=](){
             const QJsonDocument resp = QJsonDocument::fromJson(socket->readAll());
-            result = {0, 0, 0};
-            resultImg = {{}, {}, {}};
-            resultDefs = {{}, {}, {}};
-            resultAreas = {{}, {}, {}};
+            result = QVector<int>(3, 0);
+            resultImg = QVector<QVector<QPoint>>(3);
+            resultAreas = QVector<QVector<QVector<QPoint>>>(3);
+            resultDefs = QVector<QVector<int>>(3);
 
             imgId = resp["id"].toInt();
             resultJSON = resp.toJson(QJsonDocument::Compact);
@@ -46,12 +46,12 @@ algorithm::algorithm(const pylon::CAM_POS pos, const pylon *cam, QObject *parent
                     resultImg[id] << QPoint(r.toArray()[0].toInt(), r.toArray()[1].toInt());
 
                 result[id] = not prod["have_defects"].toBool();
-                if (not result[id])
+                if (prod["have_defects"].toBool())
                     for (const QJsonValueRef r : prod["defects"].toArray()) {
                         resultDefs[id] << r.toObject()["type"].toInt();
                         resultAreas[id] << std::accumulate(r.toObject()["pos"].toArray().cbegin(),
                             r.toObject()["pos"].toArray().cend(), QVector<QPoint>(),
-                            [](QVector<QPoint> v, const QJsonValue val){
+                            [](QVector<QPoint> v, const QJsonValue val) {
                                 return v << QPoint(val.toArray()[0].toInt(), val.toArray()[1].toInt());
                         });
                     }
@@ -132,7 +132,7 @@ database &operator<< (database &db, const algorithm &algo)
         r.setValue("Rslt" + s_i + "Img", QJsonDocument(img).toJson(QJsonDocument::Compact));
 
         for (const QVector<QPoint> &l : algo.resultAreas[i])
-            areas << std::accumulate(l.cbegin(), l.cend(), QJsonArray(), [](QJsonArray arr, const QPoint p){
+            areas << std::accumulate(l.cbegin(), l.cend(), QJsonArray(), [](QJsonArray arr, const QPoint p) {
                      return arr << QJsonArray({p.x(), p.y()});
             });
         r.setValue("Rslt" + s_i + "Areas", QJsonDocument(areas).toJson(QJsonDocument::Compact));

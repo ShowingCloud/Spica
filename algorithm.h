@@ -33,10 +33,10 @@ private:
     int imgId;
     int algoId;
     QString resultJSON;
-    QVector<int> result = {0, 0, 0};
-    QVector<QVector<QPoint>> resultImg = {{}, {}, {}};
-    QVector<QVector<QVector<QPoint>>> resultAreas = {{}, {}, {}};
-    QVector<QVector<int>> resultDefs = {{}, {}, {}};
+    QVector<int> result = QVector<int>(3);
+    QVector<QVector<QPoint>> resultImg = QVector<QVector<QPoint>>(3);
+    QVector<QVector<QVector<QPoint>>> resultAreas = QVector<QVector<QVector<QPoint>>>(3);
+    QVector<QVector<int>> resultDefs = QVector<QVector<int>>(3);
 };
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)

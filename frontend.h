@@ -8,6 +8,7 @@
 #include <QColor>
 
 #include "database.h"
+#include "process.h"
 
 class frontend : public QObject
 {
@@ -100,6 +101,10 @@ public:
 public slots:
     void fillData();
     const QStringList getImages(const int row);
+    const QVector<int> getAlgoResults(const int row);
+    const QVector<QVector<QPoint>> getAlgoImg(const int row);
+    const QVector<QVector<QVector<QPoint>>> getAlgoAreas(const int row);
+    const QVector<QVector<int>> getAlgoDefects(const int row);
 
 private:
     QList<QStringList> records;

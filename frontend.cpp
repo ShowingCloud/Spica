@@ -12,7 +12,8 @@ const QString frontend::getRecentImages()
 const QStringList frontend::getRecentImages(const int num)
 {
     QStringList list = globalDB->getRecentImages(num);
-    return std::accumulate(list.begin(), list.end(), QStringList(), [](QStringList ret, const QString str) {
+    return std::accumulate(list.cbegin(), list.cend(), QStringList(),
+        [](QStringList ret, const QString str) {
         return ret << "file:///" + QFileInfo(str).absoluteFilePath();
     });
 }
@@ -31,9 +32,70 @@ const QStringList productRecordModel::getImages(const int row)
         imgs << r.value("Cam" + QString::number(i) + "Img").toInt();
 
     QStringList list = globalDB->getImages(imgs);
-    return std::accumulate(list.begin(), list.end(), QStringList(), [](QStringList ret, const QString str) {
+    return std::accumulate(list.cbegin(), list.cend(), QStringList(),
+        [](QStringList ret, const QString str) {
         return ret << "file:///" + QFileInfo(str).absoluteFilePath();
     });
+}
+
+const QVector<int> productRecordModel::getAlgoResults(const int row)
+{
+    QVector<int> algos;
+    QSqlRecord r = prodModel->record(row);
+    product::POS_LCR lcr = r.value("LCR").value<product::POS_LCR>();
+
+    for (int i = 1; i < 9; ++i)
+        algos << r.value("Cam" + QString::number(i) + "Algo").toInt();
+
+    QVector<QVector<int>> results = globalDB->getAlgo(algos);
+    return std::accumulate(results.cbegin(), results.cend(), QVector<int>(),
+        [lcr](QVector<int> ret, const QVector<int> result) { return ret << result[lcr]; });
+}
+
+const QVector<QVector<QPoint>> productRecordModel::getAlgoImg(const int row)
+{
+    QVector<int> algos;
+    QSqlRecord r = prodModel->record(row);
+    product::POS_LCR lcr = r.value("LCR").value<product::POS_LCR>();
+
+    for (int i = 1; i < 9; ++i)
+        algos << r.value("Cam" + QString::number(i) + "Algo").toInt();
+
+    QVector<QVector<QVector<QPoint>>> results = globalDB->getAlgoImg(algos);
+    return std::accumulate(results.cbegin(), results.cend(), QVector<QVector<QPoint>>(),
+        [lcr](QVector<QVector<QPoint>> ret, const QVector<QVector<QPoint>> result) {
+        return ret << result[lcr];
+    });
+}
+
+const QVector<QVector<QVector<QPoint>>> productRecordModel::getAlgoAreas(const int row)
+{
+    QVector<int> algos;
+    QSqlRecord r = prodModel->record(row);
+    product::POS_LCR lcr = r.value("LCR").value<product::POS_LCR>();
+
+    for (int i = 1; i < 9; ++i)
+        algos << r.value("Cam" + QString::number(i) + "Algo").toInt();
+
+    QVector<QVector<QVector<QVector<QPoint>>>> results = globalDB->getAlgoAreas(algos);
+    return std::accumulate(results.cbegin(), results.cend(), QVector<QVector<QVector<QPoint>>>(),
+        [lcr](QVector<QVector<QVector<QPoint>>> ret, const QVector<QVector<QVector<QPoint>>> result) {
+        return ret << result[lcr];
+    });
+}
+
+const QVector<QVector<int>> productRecordModel::getAlgoDefects(const int row)
+{
+    QVector<int> algos;
+    QSqlRecord r = prodModel->record(row);
+    product::POS_LCR lcr = r.value("LCR").value<product::POS_LCR>();
+
+    for (int i = 1; i < 9; ++i)
+        algos << r.value("Cam" + QString::number(i) + "Algo").toInt();
+
+    QVector<QVector<QVector<int>>> results = globalDB->getAlgoDefects(algos);
+    return std::accumulate(results.cbegin(), results.cend(), QVector<QVector<int>>(),
+        [lcr](QVector<QVector<int>> ret, const QVector<QVector<int>> result) { return ret << result[lcr]; });
 }
 
 void productRecordModel::fillData()

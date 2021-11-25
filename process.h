@@ -86,6 +86,7 @@ private:
     int result;
     POS_LCR lcr;
 };
+Q_DECLARE_METATYPE(product::POS_LCR)
 
 class process : public QObject
 {

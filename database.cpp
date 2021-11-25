@@ -1,6 +1,7 @@
 #include <iso646.h>
 #include <QDebug>
-#include <iso646.h>
+#include <QJsonArray>
+#include <QPoint>
 
 #include "database.h"
 
@@ -64,10 +65,9 @@ bool database::createTable()
 
 const QString database::getRecentImages() const
 {
-    dbModel->setTable(DB_TABLES[DB_TBL_IMG]);
-    dbModel->setFilter("CamID=" + QString::number(0));
-    dbModel->setSort(3, Qt::DescendingOrder);
-    dbModel->select();
+    imgModel->setFilter("CamID=" + QString::number(0));
+    imgModel->setSort(3, Qt::DescendingOrder);
+    imgModel->select();
     QSqlRecord r = dbModel->record(0);
 
     return r.value("Filename").value<QString>();
@@ -75,10 +75,9 @@ const QString database::getRecentImages() const
 
 const QStringList database::getRecentImages(const int  num) const
 {
-    dbModel->setTable(DB_TABLES[DB_TBL_IMG]);
-    dbModel->setFilter("CamID=" + QString::number(0));
-    dbModel->setSort(3, Qt::DescendingOrder);
-    dbModel->select();
+    imgModel->setFilter("CamID=" + QString::number(0));
+    imgModel->setSort(3, Qt::DescendingOrder);
+    imgModel->select();
 
     QStringList ret = {};
     for (int i = 0; i < std::min(dbModel->rowCount(), num); ++i) {
@@ -87,13 +86,12 @@ const QStringList database::getRecentImages(const int  num) const
             ret << r.value("Filename").value<QString>();
         }
     }
-
     return ret;
 }
 
 const QStringList database::getImages(const QVector<int> num) const
 {
-    QStringList ret = {};
+    QStringList ret;
     for (const int n : num) {
         imgModel->setFilter("Id=" + QString::number(n));
         imgModel->select();
@@ -104,13 +102,78 @@ const QStringList database::getImages(const QVector<int> num) const
     return ret;
 }
 
-const QStringList database::getAlgoDefects(const QVector<int> num) const
+const QVector<QVector<int>> database::getAlgo(const QVector<int> num) const
 {
-    QStringList ret = {};
+    QVector<QVector<int>> ret;
     for (const int n : num) {
         algoModel->setFilter("Id=" + QString::number(n));
         algoModel->select();
-        ret << algoModel->record(0).value("FileName").toString();
+
+        QVector<int> algo;
+        for (int i = 0; i < 3; ++i)
+            algo << algoModel->record(0).value("Rslt" + QString::number(i + 1)).toInt();
+        ret << algo;
+    }
+    return ret;
+}
+
+const QVector<QVector<QVector<QPoint>>> database::getAlgoImg(const QVector<int> num) const
+{
+    QVector<QVector<QVector<QPoint>>> ret;
+    for (const int n : num) {
+        algoModel->setFilter("Id=" + QString::number(n));
+        algoModel->select();
+
+        QVector<QVector<QPoint>> algoImg;
+        for (int i = 0; i < 3; ++i) {
+            QJsonArray arr = algoModel->record(0).value("Rslt" + QString::number(i + 1) + "Img").toJsonArray();
+            algoImg << std::accumulate(arr.cbegin(), arr.cend(), QVector<QPoint>(), [](QVector<QPoint> img, const QJsonValue point) {
+                       return img << QPoint(point.toArray()[0].toInt(), point.toArray()[1].toInt());
+            });
+        }
+        ret << algoImg;
+    }
+    return ret;
+}
+
+const QVector<QVector<QVector<QVector<QPoint>>>> database::getAlgoAreas(const QVector<int> num) const
+{
+    QVector<QVector<QVector<QVector<QPoint>>>> ret;
+    for (const int n : num) {
+        algoModel->setFilter("Id=" + QString::number(n));
+        algoModel->select();
+
+        QVector<QVector<QVector<QPoint>>> algoAreas;
+        for (int i = 0; i < 3; ++i) {
+            QJsonArray arr = algoModel->record(0).value("Rslt" + QString::number(i + 1) + "Areas").toJsonArray();
+            algoAreas << std::accumulate(arr.cbegin(), arr.cend(), QVector<QVector<QPoint>>(),
+                        [](QVector<QVector<QPoint>> areas, const QJsonValue area) {
+                        return areas << std::accumulate(area.toArray().cbegin(), area.toArray().cend(), QVector<QPoint>(),
+                            [](QVector<QPoint> points, const QJsonValue point) {
+                            return points << QPoint(point.toArray()[0].toInt(), point.toArray()[1].toInt());
+                        });
+            });
+        }
+        ret << algoAreas;
+    }
+    return ret;
+}
+
+const QVector<QVector<QVector<int>>> database::getAlgoDefects(const QVector<int> num) const
+{
+    QVector<QVector<QVector<int>>> ret;
+    for (const int n : num) {
+        algoModel->setFilter("Id=" + QString::number(n));
+        algoModel->select();
+
+        QVector<QVector<int>> algoDefs;
+        for (int i = 0; i < 3; ++i) {
+            QJsonArray arr = algoModel->record(0).value("Rslt" + QString::number(i + 1) + "Defs").toJsonArray();
+            algoDefs << std::accumulate(arr.cbegin(), arr.cend(), QVector<int>(), [](QVector<int> v, const QJsonValue val) {
+                        return v << val.toInt();
+            });
+        }
+        ret << algoDefs;
     }
     return ret;
 }

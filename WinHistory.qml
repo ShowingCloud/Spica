@@ -7,6 +7,9 @@ Item {
     id: winHistory
     anchors.fill: parent
 
+    property int defaultPictureWidth: 200
+    property int defaultPictureHeight: 150
+
     HorizontalHeaderView {
         id: headerview
         x: frameBorderWidth / 2 + defaultMarginAndTextWidthHeight
@@ -45,14 +48,14 @@ Item {
                 anchors.fill: parent
                 onClicked: {
                     var images = ProductRecordModel.getImages(row)
-                    image1.source = images[0]
-                    image2.source = images[1]
-                    image3.source = images[2]
-                    image4.source = images[3]
-                    image5.source = images[4]
-                    image6.source = images[5]
-                    image7.source = images[6]
-                    image8.source = images[7]
+                    image1.imageSource = images[0]
+                    image2.imageSource = images[1]
+                    image3.imageSource = images[2]
+                    image4.imageSource = images[3]
+                    image5.imageSource = images[4]
+                    image6.imageSource = images[5]
+                    image7.imageSource = images[6]
+                    image8.imageSource = images[7]
                 }
             }
         }
@@ -69,91 +72,59 @@ Item {
         onTriggered: ProductRecordModel.fillData()
     }
 
-    Image {
+    AlgoResult {
         id: image1
         anchors.left: headerview.right
         anchors.leftMargin: defaultMarginAndTextWidthHeight
         anchors.top: headerview.top
-        width: 200
-        height: 150
-        fillMode: Image.Stretch
-        source: ""
     }
 
-    Image {
+    AlgoResult {
         id: image2
         anchors.left: image1.right
         anchors.leftMargin: defaultMarginAndTextWidthHeight
         anchors.top: image1.top
-        width: 200
-        height: 150
-        fillMode: Image.Stretch
-        source: ""
     }
 
-    Image {
+    AlgoResult {
         id: image3
         anchors.left: image2.right
         anchors.leftMargin: defaultMarginAndTextWidthHeight
         anchors.top: image1.top
-        width: 200
-        height: 150
-        fillMode: Image.Stretch
-        source: ""
     }
 
-    Image {
+    AlgoResult {
         id: image4
         anchors.left: image3.right
         anchors.leftMargin: defaultMarginAndTextWidthHeight
         anchors.top: image1.top
-        width: 200
-        height: 150
-        fillMode: Image.Stretch
-        source: ""
     }
 
-    Image {
+    AlgoResult {
         id: image5
         anchors.left: image1.left
         anchors.top: image1.bottom
         anchors.topMargin: defaultMarginAndTextWidthHeight
-        width: 200
-        height: 150
-        fillMode: Image.Stretch
-        source: ""
     }
 
-    Image {
+    AlgoResult {
         id: image6
         anchors.left: image2.left
         anchors.top: image1.bottom
         anchors.topMargin: defaultMarginAndTextWidthHeight
-        width: 200
-        height: 150
-        fillMode: Image.Stretch
-        source: ""
     }
 
-    Image {
+    AlgoResult {
         id: image7
         anchors.left: image3.left
         anchors.top: image1.bottom
         anchors.topMargin: defaultMarginAndTextWidthHeight
-        width: 200
-        height: 150
-        fillMode: Image.Stretch
-        source: ""
     }
 
-    Image {
+    AlgoResult {
         id: image8
         anchors.left: image4.left
         anchors.top: image1.bottom
         anchors.topMargin: defaultMarginAndTextWidthHeight
-        width: 200
-        height: 150
-        fillMode: Image.Stretch
-        source: ""
     }
 }

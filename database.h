@@ -31,7 +31,10 @@ public:
     const QString getRecentImages() const;
     const QStringList getRecentImages(const int  num) const;
     const QStringList getImages(const QVector<int> num) const;
-    const QStringList getAlgoDefects(const QVector<int> num) const;
+    const QVector<QVector<int>> getAlgo(const QVector<int> num) const;
+    const QVector<QVector<QVector<QPoint>>> getAlgoImg(const QVector<int> num) const;
+    const QVector<QVector<QVector<QVector<QPoint>>>> getAlgoAreas(const QVector<int> num) const;
+    const QVector<QVector<QVector<int>>> getAlgoDefects(const QVector<int> num) const;
 
     enum DB_TBL { DB_TBL_IMG, DB_TBL_ALGO, DB_TBL_PROD };
     static const inline DB_TBL DB_TBL_ALL[] = { DB_TBL_IMG, DB_TBL_ALGO, DB_TBL_PROD };
