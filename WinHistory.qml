@@ -53,9 +53,15 @@ Item {
                     var areas = ProductRecordModel.getAlgoAreas(row)
 
                     for (var child in winHistory.children) {
-                        if (winHistory.children[child].type === "AlgoResult") {
-                            winHistory.children[child].imageSource
-                                    = images[winHistory.children[child].number]
+                        var comp = winHistory.children[child]
+                        if (comp.type === "AlgoResult") {
+                            comp.imageSource = images[comp.number]
+                            comp.reset()
+                            var a = areas[comp.number]
+                            for (var area in a) {
+                                comp.modelAreas.append(a[area][a[area].length - 1])
+                                comp.modelArea.append(a[area])
+                            }
                         }
                     }
                 }
