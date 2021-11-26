@@ -52,7 +52,7 @@ const QVector<int> productRecordModel::getAlgoResults(const int row)
         [lcr](QVector<int> ret, const QVector<int> result) { return ret << result[lcr]; });
 }
 
-const QVector<QVector<QPoint>> productRecordModel::getAlgoImg(const int row)
+const QVariant productRecordModel::getAlgoImg(const int row)
 {
     QVector<int> algos;
     QSqlRecord r = prodModel->record(row);
@@ -62,13 +62,13 @@ const QVector<QVector<QPoint>> productRecordModel::getAlgoImg(const int row)
         algos << r.value("Cam" + QString::number(i) + "Algo").toInt();
 
     QVector<QVector<QVector<QPoint>>> results = globalDB->getAlgoImg(algos);
-    return std::accumulate(results.cbegin(), results.cend(), QVector<QVector<QPoint>>(),
+    return QVariant::fromValue(std::accumulate(results.cbegin(), results.cend(), QVector<QVector<QPoint>>(),
         [lcr](QVector<QVector<QPoint>> ret, const QVector<QVector<QPoint>> result) {
         return ret << result[lcr];
-    });
+    }));
 }
 
-const QVector<QVector<QVector<QPoint>>> productRecordModel::getAlgoAreas(const int row)
+const QVariant productRecordModel::getAlgoAreas(const int row)
 {
     QVector<int> algos;
     QSqlRecord r = prodModel->record(row);
@@ -78,13 +78,13 @@ const QVector<QVector<QVector<QPoint>>> productRecordModel::getAlgoAreas(const i
         algos << r.value("Cam" + QString::number(i) + "Algo").toInt();
 
     QVector<QVector<QVector<QVector<QPoint>>>> results = globalDB->getAlgoAreas(algos);
-    return std::accumulate(results.cbegin(), results.cend(), QVector<QVector<QVector<QPoint>>>(),
+    return QVariant::fromValue(std::accumulate(results.cbegin(), results.cend(), QVector<QVector<QVector<QPoint>>>(),
         [lcr](QVector<QVector<QVector<QPoint>>> ret, const QVector<QVector<QVector<QPoint>>> result) {
         return ret << result[lcr];
-    });
+    }));
 }
 
-const QVector<QVector<int>> productRecordModel::getAlgoDefects(const int row)
+const QVariant productRecordModel::getAlgoDefects(const int row)
 {
     QVector<int> algos;
     QSqlRecord r = prodModel->record(row);
@@ -94,8 +94,8 @@ const QVector<QVector<int>> productRecordModel::getAlgoDefects(const int row)
         algos << r.value("Cam" + QString::number(i) + "Algo").toInt();
 
     QVector<QVector<QVector<int>>> results = globalDB->getAlgoDefects(algos);
-    return std::accumulate(results.cbegin(), results.cend(), QVector<QVector<int>>(),
-        [lcr](QVector<QVector<int>> ret, const QVector<QVector<int>> result) { return ret << result[lcr]; });
+    return QVariant::fromValue(std::accumulate(results.cbegin(), results.cend(), QVector<QVector<int>>(),
+        [lcr](QVector<QVector<int>> ret, const QVector<QVector<int>> result) { return ret << result[lcr]; }));
 }
 
 void productRecordModel::fillData()

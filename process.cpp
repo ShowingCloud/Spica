@@ -160,7 +160,7 @@ void process::startServer(devPLCServer *dev, QObject *parent)
             break;
         }
 
-        for (const quint16 &key : data.keys())
+        for (const quint16 key : data.keys())
             dev->dev->setData(QModbusDataUnit::HoldingRegisters, key, data[key]);
 
         ++i;
@@ -254,8 +254,8 @@ void process::processing()
             }
 
             for (const devPLC::CAM_POS campos : devPLC::camposList)
-
                 if (not camReady[campos]) {
+
                     if (resp[dev->camReadAddr[campos] - startAddr] == 1) {
                         for (const pylon::CAM_POS pos : pylon::positionStation.keys(campos)) {
                             imgId[pos] = pylon::posDevList[pos]->capture(); // TODO: might get -1

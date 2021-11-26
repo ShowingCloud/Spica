@@ -102,9 +102,9 @@ public slots:
     void fillData();
     const QStringList getImages(const int row);
     const QVector<int> getAlgoResults(const int row);
-    const QVector<QVector<QPoint>> getAlgoImg(const int row);
-    const QVector<QVector<QVector<QPoint>>> getAlgoAreas(const int row);
-    const QVector<QVector<int>> getAlgoDefects(const int row);
+    const QVariant getAlgoImg(const int row);
+    const QVariant getAlgoAreas(const int row);
+    const QVariant getAlgoDefects(const int row);
 
 private:
     QList<QStringList> records;

@@ -1,5 +1,6 @@
 #include <iso646.h>
 #include <QDebug>
+#include <QJsonDocument>
 #include <QJsonArray>
 #include <QPoint>
 
@@ -126,7 +127,8 @@ const QVector<QVector<QVector<QPoint>>> database::getAlgoImg(const QVector<int> 
 
         QVector<QVector<QPoint>> algoImg;
         for (int i = 0; i < 3; ++i) {
-            QJsonArray arr = algoModel->record(0).value("Rslt" + QString::number(i + 1) + "Img").toJsonArray();
+            QJsonArray arr = QJsonDocument::fromJson(
+                        algoModel->record(0).value("Rslt" + QString::number(i + 1) + "Img").toByteArray()).array();
             algoImg << std::accumulate(arr.cbegin(), arr.cend(), QVector<QPoint>(), [](QVector<QPoint> img, const QJsonValue point) {
                        return img << QPoint(point.toArray()[0].toInt(), point.toArray()[1].toInt());
             });
@@ -145,7 +147,8 @@ const QVector<QVector<QVector<QVector<QPoint>>>> database::getAlgoAreas(const QV
 
         QVector<QVector<QVector<QPoint>>> algoAreas;
         for (int i = 0; i < 3; ++i) {
-            QJsonArray arr = algoModel->record(0).value("Rslt" + QString::number(i + 1) + "Areas").toJsonArray();
+            QJsonArray arr = QJsonDocument::fromJson(
+                        algoModel->record(0).value("Rslt" + QString::number(i + 1) + "Areas").toByteArray()).array();
             algoAreas << std::accumulate(arr.cbegin(), arr.cend(), QVector<QVector<QPoint>>(),
                         [](QVector<QVector<QPoint>> areas, const QJsonValue area) {
                         return areas << std::accumulate(area.toArray().cbegin(), area.toArray().cend(), QVector<QPoint>(),
@@ -168,7 +171,8 @@ const QVector<QVector<QVector<int>>> database::getAlgoDefects(const QVector<int>
 
         QVector<QVector<int>> algoDefs;
         for (int i = 0; i < 3; ++i) {
-            QJsonArray arr = algoModel->record(0).value("Rslt" + QString::number(i + 1) + "Defs").toJsonArray();
+            QJsonArray arr = QJsonDocument::fromJson(
+                        algoModel->record(0).value("Rslt" + QString::number(i + 1) + "Defs").toByteArray()).array();
             algoDefs << std::accumulate(arr.cbegin(), arr.cend(), QVector<int>(), [](QVector<int> v, const QJsonValue val) {
                         return v << val.toInt();
             });

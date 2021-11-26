@@ -48,14 +48,16 @@ Item {
                 anchors.fill: parent
                 onClicked: {
                     var images = ProductRecordModel.getImages(row)
-                    image1.imageSource = images[0]
-                    image2.imageSource = images[1]
-                    image3.imageSource = images[2]
-                    image4.imageSource = images[3]
-                    image5.imageSource = images[4]
-                    image6.imageSource = images[5]
-                    image7.imageSource = images[6]
-                    image8.imageSource = images[7]
+                    var defects = ProductRecordModel.getAlgoDefects(row)
+                    var locations = ProductRecordModel.getAlgoImg(row)
+                    var areas = ProductRecordModel.getAlgoAreas(row)
+
+                    for (var child in winHistory.children) {
+                        if (winHistory.children[child].type === "AlgoResult") {
+                            winHistory.children[child].imageSource
+                                    = images[winHistory.children[child].number]
+                        }
+                    }
                 }
             }
         }
@@ -74,6 +76,7 @@ Item {
 
     AlgoResult {
         id: image1
+        number: 0
         anchors.left: headerview.right
         anchors.leftMargin: defaultMarginAndTextWidthHeight
         anchors.top: headerview.top
@@ -81,6 +84,7 @@ Item {
 
     AlgoResult {
         id: image2
+        number: 1
         anchors.left: image1.right
         anchors.leftMargin: defaultMarginAndTextWidthHeight
         anchors.top: image1.top
@@ -88,6 +92,7 @@ Item {
 
     AlgoResult {
         id: image3
+        number: 2
         anchors.left: image2.right
         anchors.leftMargin: defaultMarginAndTextWidthHeight
         anchors.top: image1.top
@@ -95,6 +100,7 @@ Item {
 
     AlgoResult {
         id: image4
+        number: 3
         anchors.left: image3.right
         anchors.leftMargin: defaultMarginAndTextWidthHeight
         anchors.top: image1.top
@@ -102,6 +108,7 @@ Item {
 
     AlgoResult {
         id: image5
+        number: 4
         anchors.left: image1.left
         anchors.top: image1.bottom
         anchors.topMargin: defaultMarginAndTextWidthHeight
@@ -109,6 +116,7 @@ Item {
 
     AlgoResult {
         id: image6
+        number: 5
         anchors.left: image2.left
         anchors.top: image1.bottom
         anchors.topMargin: defaultMarginAndTextWidthHeight
@@ -116,6 +124,7 @@ Item {
 
     AlgoResult {
         id: image7
+        number: 6
         anchors.left: image3.left
         anchors.top: image1.bottom
         anchors.topMargin: defaultMarginAndTextWidthHeight
@@ -123,6 +132,7 @@ Item {
 
     AlgoResult {
         id: image8
+        number: 7
         anchors.left: image4.left
         anchors.top: image1.bottom
         anchors.topMargin: defaultMarginAndTextWidthHeight

@@ -5,6 +5,8 @@ import spica.frontend 1.0
 
 Item {
     id: algoResult
+    readonly property string type : "AlgoResult"
+    property int number : -1
     property int pictureWidth : defaultPictureWidth
     property int pictureHeight : defaultPictureHeight
     property alias imageSource : image.source
