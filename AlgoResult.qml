@@ -14,6 +14,7 @@ Item {
     property alias imageSource : image.source
     property alias modelAreas : modelAreas
     property alias modelArea : modelArea
+    property alias realSize : image.sourceSize
     implicitHeight: pictureHeight * 1.2
     implicitWidth: pictureWidth * 1.2
 
@@ -58,8 +59,8 @@ Item {
                 strokeColor: "red"
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
-                startX: model.x * pictureWidth / 1200
-                startY: model.y * pictureHeight / 800
+                startX: model.x * pictureWidth / realSize.width
+                startY: model.y * pictureHeight / realSize.height
             }
         }
 
@@ -67,8 +68,8 @@ Item {
             model: modelArea
             onObjectAdded: shapeAreas.data[shapeAreas.data.length - 1].pathElements.push(object)
             PathLine {
-                x: model.x * pictureWidth / 1200
-                y: model.y * pictureHeight / 800
+                x: model.x * pictureWidth / realSize.width
+                y: model.y * pictureHeight / realSize.height
             }
         }
     }
