@@ -1,6 +1,7 @@
 #include <QDateTime>
 
 #include "process.h"
+#include "light.h"
 
 void process::startProcessing(devPLC *dev, QObject *parent)
 {
@@ -171,6 +172,8 @@ void process::startServer(devPLCServer *dev, QObject *parent)
 
 void process::processing()
 {
+    light::allLightsOn();
+
     QDateTime prodTime = QDateTime::currentDateTime();
     QTimer *prodTimer = new QTimer(this);
     connect(prodTimer, &QTimer::timeout, [=]() {
@@ -301,7 +304,10 @@ void process::processing()
                     }
                 }
 
+            qDebug() << camReadyTimer << camReadyTimer->remainingTime();
+            qDebug() << camReadyTimer << camReadyTimer->remainingTime();
             camReadyTimer->deleteLater();
+            light::allLightsOff();
         }))
             camReadyTimer->start(checkInterval);
     });

@@ -43,7 +43,7 @@ void pylon::initialize(QObject *parent)
 #ifdef QT_DEBUG
             p->position = idPosition[i];
 #else
-            p->position = idPosition[0];
+            p->position = idPosition[std::stoi(dev.GetSerialNumber().c_str())];
 #endif
             p->station = positionStation[p->position];
             posDevList[p->position] = p;
@@ -57,6 +57,23 @@ void pylon::destroy()
     for (pylon *p : qAsConst(devList))
         delete p;
     Pylon::PylonTerminate();
+}
+
+const QVariant pylon::getCameraInfo()
+{
+    QVector<QVariantMap> arr;
+    Pylon::DeviceInfoList pylonList;
+    if (Pylon::CTlFactory::GetInstance().EnumerateDevices(pylonList) != 0)
+        for (const Pylon::CDeviceInfo &dev : qAsConst(pylonList)) {
+            QVariantMap obj;
+            obj["serialNumber"] = dev.GetSerialNumber().c_str();
+            obj["address"] = dev.GetAddress().c_str();
+            obj["fullName"] = dev.GetFriendlyName().c_str();
+            obj["macAddress"] = dev.GetMacAddress().c_str();
+            arr << obj;
+        }
+
+    return QVariant::fromValue(arr);
 }
 
 int pylon::capture()

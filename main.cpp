@@ -8,6 +8,7 @@
 #include "database.h"
 #include "frontend.h"
 #include "process.h"
+#include "light.h"
 
 database *globalDB;
 
@@ -38,6 +39,7 @@ int main(int argc, char *argv[])
     devPLCServer plcserver(&app);
     process::startServer(&plcserver, &app);
 #endif
+    light::startSearching(&app);
 
     qmlRegisterSingletonType<frontend>("spica.frontend", 1, 0, "Frontend", [&app](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)

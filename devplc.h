@@ -21,6 +21,7 @@ public:
     inline static const QVector<CAM_POS> camposList = { CAM_POS_B, CAM_POS_C, CAM_POS_D };
 
     friend class process;
+    friend class frontend;
 
 private:
     bool readData(const int start, const quint16 len, const std::function<void(QVector<quint16>)> callback) const;

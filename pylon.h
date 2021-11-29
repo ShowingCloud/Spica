@@ -37,11 +37,14 @@ public:
                                                         CAM_POS_5, CAM_POS_6, CAM_POS_7, CAM_POS_8 };
 
     friend class process;
+    friend class frontend;
 
 signals:
     void gotAlgo(const int imgId, const int algoId, const QVector<int> result) const;
 
 private:
+    static const QVariant getCameraInfo();
+
     Pylon::CInstantCamera camera;
     Pylon::CGrabResultPtr result;
     CAM_POS position;
@@ -70,6 +73,7 @@ private:
         { CAM_POS_7, devPLC::CAM_POS_B },
         { CAM_POS_8, devPLC::CAM_POS_D }};
     inline static const QHash<int, CAM_POS> idPosition = {
+        { 23932524, CAM_POS_OTHERS },
         { 0, CAM_POS_1 },
         { 1, CAM_POS_2 },
         { 2, CAM_POS_3 },

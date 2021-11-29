@@ -9,6 +9,8 @@
 
 #include "database.h"
 #include "process.h"
+#include "light.h"
+#include "pylon.h"
 
 class frontend : public QObject
 {
@@ -23,6 +25,14 @@ public:
 public slots:
     static const QString getRecentImages();
     static const QStringList getRecentImages(const int num);
+
+    static inline const QVariant getSerialInfo() {
+        return light::getSerialInfo();
+    }
+
+    static inline const QVariant getCameraInfo() {
+        return pylon::getCameraInfo();
+    }
 };
 
 

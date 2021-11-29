@@ -17,6 +17,7 @@ SOURCES += \
         database.cpp \
         devplc.cpp \
         frontend.cpp \
+        light.cpp \
         main.cpp \
         process.cpp \
         pylon.cpp
@@ -41,6 +42,7 @@ HEADERS += \
     database.h \
     devplc.h \
     frontend.h \
+    light.h \
     process.h \
     pylon.h
 

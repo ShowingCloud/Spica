@@ -60,7 +60,7 @@ algorithm::algorithm(const pylon::CAM_POS pos, const pylon *cam, QObject *parent
             *globalDB << *this << this->algoId;
 
             emit cam->gotAlgo(imgId, this->algoId, result);
-            qDebug() << "Got response: " << resp;
+            qInfo() << "Got response: " << resp;
         });
     });
     QLocalServer::removeServer("algo-" + QString::number(position));
