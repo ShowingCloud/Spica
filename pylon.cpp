@@ -15,7 +15,14 @@ pylon::pylon(const Pylon::CDeviceInfo dev, QObject *parent)
 {
     qDebug() << "Using device: " << camera.GetDeviceInfo().GetModelName();
     camera.MaxNumBuffer = 100;
-}
+/*
+    camera.RegisterConfiguration(new Pylon::CSoftwareTriggerConfiguration, Pylon::RegistrationMode_ReplaceAll, Pylon::Cleanup_Delete);
+    camera.RegisterImageEventHandler(new pylonImageEventHandler, Pylon::RegistrationMode_Append, Pylon::Cleanup_Delete);
+    camera.Open();
+
+    if (camera.CanWaitForFrameTriggerReady())
+        camera.StartGrabbing(Pylon::GrabStrategy_OneByOne, Pylon::GrabLoop_ProvidedByInstantCamera);
+*/}
 
 pylon::~pylon()
 {
@@ -68,7 +75,7 @@ const QVariant pylon::getCameraInfo()
             QVariantMap obj;
             obj["serialNumber"] = dev.GetSerialNumber().c_str();
             obj["address"] = dev.GetAddress().c_str();
-            obj["fullName"] = dev.GetFriendlyName().c_str();
+            obj["friendlyName"] = dev.GetFriendlyName().c_str();
             obj["macAddress"] = dev.GetMacAddress().c_str();
             arr << obj;
         }
@@ -79,6 +86,8 @@ const QVariant pylon::getCameraInfo()
 int pylon::capture()
 {
     camera.GrabOne(5000, result);
+//    if (camera.WaitForFrameTriggerReady(1000, Pylon::TimeoutHandling_Return))
+//        camera.ExecuteSoftwareTrigger();
 
     if (result->GrabSucceeded()) {
         currentImage = static_cast<const quint8 *>(result->GetBuffer());
@@ -87,7 +96,6 @@ int pylon::capture()
         currentImageHeight = static_cast<int>(result->GetHeight());
         currentFilename = savePath + "/" + QDateTime::currentDateTime().toString(Qt::ISODate) + "-"
                                         + QUuid::createUuid().toString(QUuid::Id128) + ".png";
-        qDebug() << currentImageSize << currentImageWidth << currentImageHeight << currentFilename;
         /*
         QImage img(static_cast<const quint8 *>(result->GetBuffer()),
                    static_cast<int>(result->GetWidth()),

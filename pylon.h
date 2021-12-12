@@ -84,4 +84,12 @@ private:
         { 7, CAM_POS_8 }};
 };
 
+class pylonImageEventHandler : public Pylon::CImageEventHandler
+{
+public:
+    virtual void onImageGrabbed(Pylon::CInstantCamera &camera, const Pylon::CGrabResultPtr &result) {
+        qDebug() << "onImageGrabbed";
+    }
+};
+
 #endif // PYLON_H
