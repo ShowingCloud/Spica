@@ -26,12 +26,18 @@ database::database(QObject *parent) : QObject(parent)
     prodModel = new QSqlTableModel(this, db);
     prodModel->setTable(DB_TABLES[DB_TBL_PROD]);
     prodModel->setSort(0, Qt::DescendingOrder);
+
     imgModel = new QSqlTableModel(this, db);
     imgModel->setTable(DB_TABLES[DB_TBL_IMG]);
     imgModel->setSort(0, Qt::DescendingOrder);
+
     algoModel = new QSqlTableModel(this, db);
     algoModel->setTable(DB_TABLES[DB_TBL_ALGO]);
     algoModel->setSort(0, Qt::DescendingOrder);
+
+    prefModel = new QSqlTableModel(this, db);
+    prefModel->setTable(DB_TABLES[DB_TBL_PREF]);
+    prefModel->setSort(0, Qt::DescendingOrder);
 }
 
 database::~database()
@@ -180,6 +186,41 @@ const QVector<QVector<QVector<int>>> database::getAlgoDefects(const QVector<int>
         ret << algoDefs;
     }
     return ret;
+}
+
+const QJsonDocument database::getPref(const QString var) const
+{
+    prefModel->setFilter("Var=" + var);
+    prefModel->select();
+    return QJsonDocument::fromJson(prefModel->record(0).value("Value").toByteArray());
+}
+
+bool database::setPref(const QString var, const QJsonDocument value)
+{
+    prefModel->setFilter("Var=" + var);
+    prefModel->select();
+
+    QSqlRecord r;
+    if (prefModel->rowCount() != 0)
+        r = prefModel->record(0);
+    else
+        r = prefModel->record();
+
+    r.setValue("Time", QDateTime::currentDateTime());
+    r.setValue("Value", value.toJson(QJsonDocument::Compact));
+
+    bool ret;
+    if (prefModel->rowCount() != 0)
+        ret = prefModel->setRecord(0, r);
+    else
+        ret = prefModel->insertRecord(-1, r);
+
+    if (!ret) {
+        qDebug() << prefModel->lastError();
+        return false;
+    }
+
+    return true;
 }
 
 const database &database::operator<< (int &lastId) const

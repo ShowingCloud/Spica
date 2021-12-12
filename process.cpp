@@ -204,6 +204,13 @@ void process::processing()
                                   camProdId[i][campos], static_cast<product::POS_LCR>(i), this);
                 }
 
+            for (const devPLC::CAM_POS campos : devPLC::camposList)
+                for (int i = 0; i < 3; ++i) {
+                    camResultProdId[i][campos] = resp[dev->camResultProdAddr[campos][i] - startAddr];
+                    camResultProd[i][campos] = product::findOrCreate(
+                                  camResultProdId[i][campos], static_cast<product::POS_LCR>(i), this);
+                }
+
             gotProd = true;
             prodTimer->deleteLater();
         }))
@@ -239,6 +246,36 @@ void process::processing()
             pneuTimer->start(checkInterval);
     });
     pneuTimer->start(0);
+
+    QDateTime camResultTime = QDateTime::currentDateTime();
+    QTimer *camResultTimer = new QTimer(this);
+    connect(camResultTimer, &QTimer::timeout, [=]() {
+        camResultTimer->setInterval(checkInterval);
+        if (not dev->readData(dev->camResultAddr[devPLC::CAM_POS_B][0], dev->camResultAddrLen, [=](QVector<quint16> resp) {
+
+            if (resp.length() != dev->pneuAddrLen) {
+                if (camResultTime.msecsTo(QDateTime::currentDateTime()) > readPlcTimeout) {
+                    camResultTimer->deleteLater();
+                    return;
+                }
+
+                camResultTimer->start(checkInterval);
+                return;
+            }
+
+            for (const devPLC::CAM_POS campos : devPLC::camposList)
+                for (int i = 0; i < 3; ++i) {
+                    camResult[i][campos] = resp[dev->camResultAddr[campos][i] - dev->camResultAddr[devPLC::CAM_POS_B][0]];
+                    if (gotProd)
+                        camResultProd[i][campos]->setCamResult(campos, camResult[i][campos]);
+                }
+
+            camResultReady = true;
+            camResultTimer->deleteLater();
+        }))
+            camResultTimer->start(checkInterval);
+    });
+    camResultTimer->start(0);
 
     QDateTime camReadyTime = QDateTime::currentDateTime();
     QTimer *camReadyTimer = new QTimer(this);
@@ -361,7 +398,7 @@ void process::processing()
             }
         }
 
-        if (not pneuReady and not timedout) {
+        if ((not pneuReady or not camResultReady) and not timedout) {
             waitTimer->start(checkInterval);
             return;
         }
@@ -371,6 +408,14 @@ void process::processing()
                 prod->setPneu(pneuResult[i]);
             else if (timedout)
                 prod->setPneu(false);
+
+            for (const devPLC::CAM_POS campos : devPLC::camposList) {
+                product *prod = camResultProd[i][campos];
+                if (not prod->isCamResultReady(campos))
+                    prod->setCamResult(campos, camResult[i][campos]);
+                else if (timedout)
+                    prod->setCamResult(campos, false);
+            }
 
             if (prod->isReady()) { // Both pneu and algo ready are set above when timeout
                 *globalDB << *prod;

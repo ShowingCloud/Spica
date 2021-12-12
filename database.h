@@ -35,9 +35,11 @@ public:
     const QVector<QVector<QVector<QPoint>>> getAlgoImg(const QVector<int> num) const;
     const QVector<QVector<QVector<QVector<QPoint>>>> getAlgoAreas(const QVector<int> num) const;
     const QVector<QVector<QVector<int>>> getAlgoDefects(const QVector<int> num) const;
+    const QJsonDocument getPref(const QString var) const;
+    bool setPref(const QString var, const QJsonDocument value);
 
-    enum DB_TBL { DB_TBL_IMG, DB_TBL_ALGO, DB_TBL_PROD };
-    static const inline DB_TBL DB_TBL_ALL[] = { DB_TBL_IMG, DB_TBL_ALGO, DB_TBL_PROD };
+    enum DB_TBL { DB_TBL_IMG, DB_TBL_ALGO, DB_TBL_PROD, DB_TBL_PREF };
+    static const inline DB_TBL DB_TBL_ALL[] = { DB_TBL_IMG, DB_TBL_ALGO, DB_TBL_PROD, DB_TBL_PREF };
     enum DB_RET { DB_RET_SUCCESS };
 
 private:
@@ -50,11 +52,12 @@ private:
     QSqlTableModel  *prodModel  = nullptr;
     QSqlTableModel  *imgModel   = nullptr;
     QSqlTableModel  *algoModel  = nullptr;
+    QSqlTableModel  *prefModel  = nullptr;
 
     inline const static QString filename = "database.db";
 
     inline static const QHash<DB_TBL, QString> DB_TABLES = {
-        {DB_TBL_IMG, "images"}, {DB_TBL_ALGO, "algorithms"}, {DB_TBL_PROD, "products"}};
+        {DB_TBL_IMG, "images"}, {DB_TBL_ALGO, "algorithms"}, {DB_TBL_PROD, "products"}, {DB_TBL_PREF, "preferences"}};
 
     static const inline QHash<DB_TBL, QList<QStringList>> DB_COLUMNS = {
         {DB_TBL_IMG, {{"Id", "INTEGER", "UNIQUE", "PRIMARY KEY", "AUTOINCREMENT"},
@@ -75,7 +78,9 @@ private:
                        {"Cam6Img", "INTEGER"}, {"Cam6Algo", "INTEGER"}, {"Cam6Rslt", "INTEGER"},
                        {"Cam7Img", "INTEGER"}, {"Cam7Algo", "INTEGER"}, {"Cam7Rslt", "INTEGER"},
                        {"Cam8Img", "INTEGER"}, {"Cam8Algo", "INTEGER"}, {"Cam8Rslt", "INTEGER"},
-                       {"Rslt", "INTEGER"}, {"LCR", "INTEGER"}}}};
+                       {"Rslt", "INTEGER"}, {"LCR", "INTEGER"}}},
+        {DB_TBL_PREF, {{"Id", "INTEGER", "UNIQUE", "PRIMARY KEY", "AUTOINCREMENT"},
+                       {"Time", "DATETIME"}, {"Var", "TEXT"}, {"Value", "TEXT"}}}};
 
     inline static const QHash<DB_TBL, QStringList> DB_INDEXES = {
         {DB_TBL_IMG, {"CamID", "Position", "Time"}},

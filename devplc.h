@@ -40,9 +40,6 @@ private:
     const int timeout = 450;
     const int retries = 3;
     const int serverAddr = 255;
-    const int startRead = 0;
-    const quint16 lenRead = 68;
-    const int startWrite = 70;
     const quint16 lenWrite = 9;
     const int addrState = 100;
 
@@ -65,6 +62,15 @@ private:
         { CAM_POS_B, { 2, 12, 22 } },
         { CAM_POS_C, { 4, 14, 24 } },
         { CAM_POS_D, { 6, 16, 26 } }};
+    inline static const QHash<CAM_POS, QVector<int>> camResultAddr = {
+        { CAM_POS_B, { 47, 52, 62 } },
+        { CAM_POS_C, { 48, 53, 63 } },
+        { CAM_POS_D, { 49, 54, 64 } }};
+    inline static const quint16 camResultAddrLen = 18;
+    inline static const QHash<CAM_POS, QVector<int>> camResultProdAddr = {
+        { CAM_POS_B, { 4, 14, 24 } },
+        { CAM_POS_C, { 6, 16, 26 } },
+        { CAM_POS_D, { 8, 18, 28 } }};
     //inline static QHash<CAM_POS, QVector<pylon *>> devList = {
     //    { CAM_POS_B, {} },
     //    { CAM_POS_C, {} },
@@ -72,7 +78,7 @@ private:
     inline static const QVector<int> pneuAddr = { 34, 39, 44 };
     inline static const quint16 pneuAddrLen = 11;
     inline static const QVector<int> pneuProdAddr = { 8, 18, 28 };
-    inline static const quint16 prodAddrLen = 27;
+    inline static const quint16 prodAddrLen = 28;
 };
 
 #ifdef QT_DEBUG

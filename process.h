@@ -19,6 +19,9 @@ public:
     explicit product(const int id, const POS_LCR lcr, QObject *parent = nullptr) : QObject(parent), prodId(id), lcr(lcr) {
         for (const pylon::CAM_POS campos : pylon::camposList)
             algoReady[campos] = false;
+
+        for (const devPLC::CAM_POS campos : devPLC::camposList)
+            camResultReady[campos] = false;
     }
 
     friend database &operator<< (database &db, const product &prod);
@@ -44,6 +47,11 @@ public:
         pneuReady = true;
     }
 
+    inline void setCamResult(const devPLC::CAM_POS campos, const int result) {
+        camResult[campos] = result;
+        camResultReady[campos] = true;
+    }
+
     inline void setAlgo(const pylon::CAM_POS campos, const int setResult,
                         const int setImgId, const int setAlgoId) {
         imgId[campos] = setImgId;
@@ -56,12 +64,18 @@ public:
         return pneuReady;
     }
 
+    inline bool isCamResultReady(const devPLC::CAM_POS campos) {
+        return camResultReady[campos];
+    }
+
     inline bool isAlgoReady(const pylon::CAM_POS campos) {
         return algoReady[campos];
     }
 
     inline bool isReady() {
         if (not pneuReady) return false;
+        for (const devPLC::CAM_POS campos : devPLC::camposList)
+            if (not camResultReady[campos]) return false;
         for (const pylon::CAM_POS campos : pylon::camposList)
             if (not algoReady[campos]) return false;
 
@@ -81,6 +95,8 @@ private:
     QHash<pylon::CAM_POS, int> algoResult;
     QHash<pylon::CAM_POS, int> algoId;
     QHash<pylon::CAM_POS, int> imgId;
+    QHash<devPLC::CAM_POS, bool> camResultReady;
+    QHash<devPLC::CAM_POS, int> camResult;
     bool pneuReady = false;
     int pneuResult;
     int result;
@@ -98,6 +114,9 @@ public:
             for (int i = 0; i < 3; ++i) {
                 camProdId[i][campos] = 0;
                 camProd[i][campos] = nullptr;
+                camResultProdId[i][campos] = 0;
+                camResultProd[i][campos] = nullptr;
+                camResult[i][campos] = 0;
             }
             camReady[campos] = false;
         }
@@ -131,6 +150,7 @@ private:
     product *pneuProd[3] = {nullptr, nullptr, nullptr};
     int pneuResult[3] = {0, 0, 0};
     bool pneuReady = false;
+
     QHash<devPLC::CAM_POS, int> camProdId[3];
     QHash<devPLC::CAM_POS, product *> camProd[3];
     QHash<devPLC::CAM_POS, bool> camReady;
@@ -138,6 +158,11 @@ private:
     QHash<pylon::CAM_POS, int> algoId;
     QHash<pylon::CAM_POS, QVector<int>> algoResult;
     QHash<pylon::CAM_POS, bool> algoReady;
+
+    QHash<devPLC::CAM_POS, int> camResultProdId[3];
+    QHash<devPLC::CAM_POS, product *> camResultProd[3];
+    bool camResultReady = false;
+    QHash<devPLC::CAM_POS, int> camResult[3];
 };
 
 #endif // PROCESS_H
