@@ -298,7 +298,15 @@ void process::processing()
 
                     if (resp[dev->camReadAddr[campos] - startAddr] == 1) {
                         for (const pylon::CAM_POS pos : pylon::positionStation.keys(campos)) {
-                            imgId[pos] = pylon::posDevList[pos]->capture(); // TODO: might get -1
+                            if (not pylon::posDevList.contains(pos)) {
+                                qDebug() << "Non existing pylon on pos" << pos;
+                                continue;
+                            }
+                            imgId[pos] = pylon::posDevList[pos]->capture();
+                            if (imgId[pos] == -1) {
+                                qDebug() << "Capture return -1";
+                                continue;
+                            }
 
                             QDateTime startCamTime = QDateTime::currentDateTime();
                             QMetaObject::Connection * const conn = new QMetaObject::Connection;
@@ -366,7 +374,7 @@ void process::processing()
         bool timedout = (waitTime.msecsTo(QDateTime::currentDateTime()) > processTimeout);
 
         for (const pylon::CAM_POS campos : pylon::camposList) {
-            if (not timedout and not algoReady[campos]) {
+            if (not algoReady[campos] and not timedout) {
                 waitTimer->start(checkInterval);
                 return;
             }
@@ -376,20 +384,20 @@ void process::processing()
                 if (timedout and not algoReady[campos]) {
                     qDebug() << "Timeout on algo ready" << prod->getProdId() << algoReady << waitTime.msecsTo(QDateTime::currentDateTime());
                     prod->setAlgo(campos, false, imgId[campos], 0);
-                }
-                else if (not prod->isAlgoReady(campos)) {
+                } else if (not prod->isAlgoReady(campos)) {
                     qInfo() << "Setting algo ready" << prod->getProdId() << algoReady;
                     prod->setAlgo(campos, algoResult[campos][i], imgId[campos], algoId[campos]);
                 }
             }
         }
         // We're here either because all algos ready or when processTimeout
+        // If we would like to submit algo results earlier the codes below have to be merged above
 
         for (const devPLC::CAM_POS campos : devPLC::camposList) {
             for (int i = 0; i < 3 ; ++i) {
                 bool result = true;
                 for (const pylon::CAM_POS cam : pylon::positionStation.keys(campos))
-                    result = (algoResult[cam][i] == 1);
+                    if (algoResult[cam][i] != 1) result = false;
 
                 if (not dev->writeData(dev->camWriteAddr[campos][i], {result}, [](bool ret) {
                     if (not ret) qDebug() << "Write camera result error";
@@ -398,6 +406,7 @@ void process::processing()
             }
         }
 
+        // We mainly want to keep the non-interactive parts after algo results submission
         if ((not pneuReady or not camResultReady) and not timedout) {
             waitTimer->start(checkInterval);
             return;
@@ -417,7 +426,7 @@ void process::processing()
                     prod->setCamResult(campos, false);
             }
 
-            if (prod->isReady()) { // Both pneu and algo ready are set above when timeout
+            if (prod->isReady()) { // Pneu, cam results and algo ready are all set above when timeout
                 *globalDB << *prod;
                 qDebug() << "Removed from product list: " << prod->getProdId() << product::productList.removeAll(prod);
             }

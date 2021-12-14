@@ -7,6 +7,7 @@
 #endif
 
 #include <QObject>
+#include <QJsonDocument>
 #include <iso646.h>
 
 #include "devplc.h"
@@ -63,25 +64,30 @@ private:
     inline static QHash<CAM_POS, pylon *> posDevList = {};
     inline static const QString savePath = "images";
 
-    inline static const QHash<CAM_POS, devPLC::CAM_POS> positionStation = {
-        { CAM_POS_1, devPLC::CAM_POS_B },
-        { CAM_POS_2, devPLC::CAM_POS_C },
-        { CAM_POS_3, devPLC::CAM_POS_B },
-        { CAM_POS_4, devPLC::CAM_POS_C },
-        { CAM_POS_5, devPLC::CAM_POS_B },
-        { CAM_POS_6, devPLC::CAM_POS_C },
-        { CAM_POS_7, devPLC::CAM_POS_B },
-        { CAM_POS_8, devPLC::CAM_POS_D }};
-    inline static const QHash<int, CAM_POS> idPosition = {
-        { 23932524, CAM_POS_OTHERS },
-        { 0, CAM_POS_1 },
-        { 1, CAM_POS_2 },
-        { 2, CAM_POS_3 },
-        { 3, CAM_POS_4 },
-        { 4, CAM_POS_5 },
-        { 5, CAM_POS_6 },
-        { 6, CAM_POS_7 },
-        { 7, CAM_POS_8 }};
+    inline static QHash<CAM_POS, devPLC::CAM_POS> positionStation = {};
+    inline static const QJsonDocument defaultPositionStation = QJsonDocument::fromJson("{\
+        \"positionStation\": [\
+            { \"position\": 1, \"station\": 0 },\
+            { \"position\": 2, \"station\": 1 },\
+            { \"position\": 3, \"station\": 2 },\
+            { \"position\": 4, \"station\": 1 },\
+            { \"position\": 5, \"station\": 0 },\
+            { \"position\": 6, \"station\": 1 },\
+            { \"position\": 7, \"station\": 2 },\
+            { \"position\": 8, \"station\": 0 }\
+        ]}");
+    inline static QHash<int, CAM_POS> idPosition = {};
+    inline static const QJsonDocument defaultIdPosition = QJsonDocument::fromJson("{\
+        \"idPosition\": [\
+            { \"id\": 23932524, \"position\": 1 },\
+            { \"id\": 23932524, \"position\": 2 },\
+            { \"id\": 23932524, \"position\": 3 },\
+            { \"id\": 23932524, \"position\": 4 },\
+            { \"id\": 23932524, \"position\": 5 },\
+            { \"id\": 23932524, \"position\": 6 },\
+            { \"id\": 23932524, \"position\": 7 },\
+            { \"id\": 23932524, \"position\": 8 }\
+        ]}");
 };
 
 class pylonImageEventHandler : public Pylon::CImageEventHandler

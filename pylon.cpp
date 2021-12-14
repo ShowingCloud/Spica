@@ -4,6 +4,8 @@
 #include <QDir>
 #include <QDateTime>
 #include <QUuid>
+#include <QJsonArray>
+#include <QJsonDocument>
 #include <iso646.h>
 
 #include "pylon.h"
@@ -34,29 +36,36 @@ pylon::~pylon()
 void pylon::initialize(QObject *parent)
 {
     QDir::current().mkdir(savePath);
+    idPosition = {};
+    positionStation = {};
+    QJsonDocument pylonMap = globalDB->getPref("PylonMap");
+    if (pylonMap == QJsonDocument()) pylonMap = defaultIdPosition;
+    QJsonDocument positionMap = globalDB->getPref("PositionMap");
+    if (positionMap == QJsonDocument()) positionMap = defaultPositionStation;
+
+    // For non-existing pylon dev id, dev not created and idPosition
+    // item missing but positionStation should be fully connected
+
+    for (const QJsonValue obj : positionMap["positionStation"].toArray())
+        positionStation.insert(static_cast<pylon::CAM_POS>(obj["position"].toInt()),
+                static_cast<devPLC::CAM_POS>(obj["station"].toInt()));
 
     Pylon::PylonInitialize();
     Pylon::DeviceInfoList pylonList;
     if (Pylon::CTlFactory::GetInstance().EnumerateDevices(pylonList) != 0)
-#ifdef QT_DEBUG
-        for (int i = 0; i < 8; ++i) {
-            Pylon::CDeviceInfo dev = pylonList[0];
-#else
-        for (const Pylon::CDeviceInfo &dev : qAsConst(pylonList)) {
-#endif
-            pylon *p = new pylon(dev, parent);
-            devList << p;
+        for (const Pylon::CDeviceInfo &dev : qAsConst(pylonList))
+            for (const QJsonValue obj : pylonMap["idPosition"].toArray())
+                if (obj["id"].toInt() == std::stoi(dev.GetSerialNumber().c_str())) {
+                    pylon *p = new pylon(dev, parent);
+                    devList << p;
+                    p->position = static_cast<pylon::CAM_POS>(obj["position"].toInt());
+                    idPosition.insert(obj["id"].toInt(), p->position);
 
-#ifdef QT_DEBUG
-            p->position = idPosition[i];
-#else
-            p->position = idPosition[std::stoi(dev.GetSerialNumber().c_str())];
-#endif
-            p->station = positionStation[p->position];
-            posDevList[p->position] = p;
-            p->algo = new algorithm(p->position, p, parent);
-            qDebug() << p << p->position << p->station;
-        }
+                    p->station = positionStation[p->position];
+                    posDevList[p->position] = p;
+                    p->algo = new algorithm(p->position, p, parent);
+                    qDebug() << p << p->position << p->station;
+                }
 }
 
 void pylon::destroy()
