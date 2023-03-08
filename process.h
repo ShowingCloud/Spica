@@ -146,23 +146,23 @@ private:
     devPLC *dev;
     QObject *parent;
     bool gotProd = false;
-    int pneuProdId[3] = {0, 0, 0};
-    product *pneuProd[3] = {nullptr, nullptr, nullptr};
-    int pneuResult[3] = {0, 0, 0};
+    std::array<int, 3> pneuProdId = {0, 0, 0};
+    std::array<product *, 3> pneuProd = {nullptr, nullptr, nullptr};
+    std::array<int, 3> pneuResult = {0, 0, 0};
     bool pneuReady = false;
 
-    QHash<devPLC::CAM_POS, int> camProdId[3];
-    QHash<devPLC::CAM_POS, product *> camProd[3];
+    std::array<QHash<devPLC::CAM_POS, int>, 3> camProdId;
+    std::array<QHash<devPLC::CAM_POS, product *>, 3> camProd;
     QHash<devPLC::CAM_POS, bool> camReady;
     QHash<pylon::CAM_POS, int> imgId;
     QHash<pylon::CAM_POS, int> algoId;
     QHash<pylon::CAM_POS, QVector<int>> algoResult;
     QHash<pylon::CAM_POS, bool> algoReady;
 
-    QHash<devPLC::CAM_POS, int> camResultProdId[3];
-    QHash<devPLC::CAM_POS, product *> camResultProd[3];
+    std::array<QHash<devPLC::CAM_POS, int>, 3> camResultProdId;
+    std::array<QHash<devPLC::CAM_POS, product *>, 3> camResultProd;
     bool camResultReady = false;
-    QHash<devPLC::CAM_POS, int> camResult[3];
+    std::array<QHash<devPLC::CAM_POS, int>, 3> camResult;
 };
 
 #endif // PROCESS_H
