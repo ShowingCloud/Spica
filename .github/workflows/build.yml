@@ -139,9 +139,8 @@ jobs:
           dir "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\"
           dir "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\"
           dir "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\"
-          dir "C:\Program Files (x86)\Microsoft Visual Studio\2022\"
-          dir "C:\Program Files (x86)\Microsoft Visual Studio\"
-          dir "C:\Program Files (x86)\"
+          dir "C:\Program Files (x86)\Microsoft Visual Studio\Shared\"
+          dir "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
           qmake
           nmake
           windeployqt release/Spica.exe
