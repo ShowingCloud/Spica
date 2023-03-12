@@ -39,7 +39,7 @@ jobs:
         qt_ver: [5.12.11, 5.15.2, 6.2.0]
         qt_target: [desktop]
         # qt_arch: [win64_msvc2019_64, win32_msvc2019, win64_msvc2017_64, win32_msvc2017, win64_mingw81, win32_mingw81, win64_mingw73, win32_mingw73]
-        qt_arch: [win64_msvc2019_64, win32_msvc2019, win64_msvc2017_64, win32_msvc2017]
+        qt_arch: [win64_msvc2022_64, win32_msvc2022, win64_msvc2019_64, win32_msvc2019, win64_msvc2017_64, win32_msvc2017]
         exclude: 
           - qt_ver: 6.2.0
             qt_arch: win32_msvc2019
@@ -76,6 +76,10 @@ jobs:
           #  msvc_arch: x64
           #- qt_arch: win32_mingw73
           #  msvc_arch: x86
+          - qt_arch: win64_msvc2022_64
+            msvc_arch: x64
+          - qt_arch: win32_msvc2022
+            msvc_arch: x86
           - qt_arch: win64_msvc2019_64
             msvc_arch: x64
           - qt_arch: win32_msvc2019
@@ -130,7 +134,7 @@ jobs:
         env:
           vc_arch: ${{ matrix.msvc_arch }}
         run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
           qmake
           nmake
           windeployqt release/Spica.exe
