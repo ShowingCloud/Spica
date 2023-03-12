@@ -135,6 +135,11 @@ jobs:
           vc_arch: ${{ matrix.msvc_arch }}
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
+          dir "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\"
+          dir "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\"
+          dir "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\"
+          dir "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\"
+          dir "C:\Program Files (x86)\Microsoft Visual Studio\2022\"
           qmake
           nmake
           windeployqt release/Spica.exe
